@@ -1,0 +1,16 @@
+with "../ada-awa/util/config";
+with "../ada-awa/util/util";
+with "../ada-awa/ado/ado";
+project Babel is
+
+   for Main use ("babel_main.adb");
+   for Source_Dirs use ("src", "src/model", "src/zip-ada");
+   for Object_Dir use "./" & Config'Object_Dir & "/obj";
+   for Exec_Dir use "./" & Config'Exec_Dir & "/bin";
+
+   package Binder renames Config.Binder;
+   package Builder renames Config.Builder;
+   package Compiler renames Config.Compiler;
+   package Linker renames Config.Linker;
+
+end Babel;

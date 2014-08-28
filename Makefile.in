@@ -1,0 +1,20 @@
+NAME=babel
+LIBNAME=lib
+
+PLUGINS=
+
+include rules.mk
+
+# Model generation arguments with Dynamo
+# --package XXX.XXX.Models db uml/xxx.zargo
+DYNAMO_ARGS=--package Babel.Base.Models db uml/babel.zargo
+
+post-build:
+	for i in  ; do \
+	   $(MAKE) -C plugins/$$i ; \
+	done
+
+post-generate:
+	for i in  ; do \
+	   $(MAKE) -C plugins/$$i generate ; \
+	done
