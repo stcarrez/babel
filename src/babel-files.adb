@@ -1,4 +1,4 @@
---  bkp --
+--  bkp-files -- File and directories
 -----------------------------------------------------------------------
 --  Copyright (C) 2014 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
@@ -28,11 +28,22 @@ package body Babel.Files is
 
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("Bkp.Files");
 
+   --  ------------------------------
    --  Return true if the file was modified and need a backup.
+   --  ------------------------------
    function Is_Modified (Element : in File) return Boolean is
    begin
       return Element.Status /= FILE_UNCHANGED;
    end Is_Modified;
+
+   --  ------------------------------
+   --  Return the path for the file.
+   --  ------------------------------
+   function Get_Path (Element : in File) return String is
+   begin
+      return Util.Files.Compose (Ada.Strings.Unbounded.To_String (Element.Path),
+                                 Ada.Strings.Unbounded.To_String (Element.Name));
+   end Get_Path;
 
    overriding
    procedure Add_File (Into    : in out File_Queue;
