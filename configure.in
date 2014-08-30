@@ -1,6 +1,6 @@
 dnl Autoconf configure script for bkp
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(src/bkp.ads)
+AC_INIT(src/babel.ads)
 AC_CANONICAL_SYSTEM
 dnl AM_MAINTAINER_MODE
 # Current release settings
@@ -162,5 +162,5 @@ rm -f t.gpr
 AC_MSG_RESULT(${AWA_DIR})
 AC_SUBST(AWA_DIR)
 AC_OUTPUT(
-Makefile bkp.gpr tests.gpr rules.mk
+Makefile babel.gpr rules.mk
 )

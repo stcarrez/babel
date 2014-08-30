@@ -561,7 +561,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 PACKAGE_URL=
 
-ac_unique_file="src/bkp.ads"
+ac_unique_file="src/babel.ads"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 AWA_DIR
@@ -3048,7 +3048,7 @@ rm -f t.gpr
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${AWA_DIR}" >&5
 $as_echo "${AWA_DIR}" >&6; }
 
-ac_config_files="$ac_config_files Makefile bkp.gpr tests.gpr rules.mk"
+ac_config_files="$ac_config_files Makefile babel.gpr rules.mk"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -3769,8 +3769,7 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "bkp.gpr") CONFIG_FILES="$CONFIG_FILES bkp.gpr" ;;
-    "tests.gpr") CONFIG_FILES="$CONFIG_FILES tests.gpr" ;;
+    "babel.gpr") CONFIG_FILES="$CONFIG_FILES babel.gpr" ;;
     "rules.mk") CONFIG_FILES="$CONFIG_FILES rules.mk" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
