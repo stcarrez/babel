@@ -61,6 +61,7 @@ package body Babel.Stores.Local is
       Ada.Streams.Stream_IO.Open (File, Ada.Streams.Stream_IO.In_File, Abs_Path);
       Ada.Streams.Stream_IO.Read (File, Into.Data, Into.Last);
       Ada.Streams.Stream_IO.Close (File);
+      Log.Info ("Read {0} -> {1}", Abs_Path, Ada.Streams.Stream_Element_Offset'Image (Into.Last));
    end Read;
 
 
@@ -73,7 +74,15 @@ package body Babel.Stores.Local is
       File     : Ada.Streams.Stream_IO.File_Type;
       Abs_Path : constant String := Store.Get_Absolute_Path (Path);
    begin
-      Ada.Streams.Stream_IO.Open (File, Ada.Streams.Stream_IO.Out_File, Abs_Path);
+      Log.Info ("Write {0}", Abs_Path);
+
+      begin
+         Ada.Streams.Stream_IO.Create (File, Ada.Streams.Stream_IO.Out_File, Abs_Path);
+      exception
+         when Ada.Streams.Stream_IO.Name_Error =>
+            Log.Info ("Create {0}", Abs_Path);
+            Ada.Streams.Stream_IO.Create (File, Ada.Streams.Stream_IO.Out_File, Abs_Path);
+      end;
       Ada.Streams.Stream_IO.Write (File, Into.Data (Into.Data'First .. Into.Last));
       Ada.Streams.Stream_IO.Close (File);
    end Write;
@@ -105,6 +114,7 @@ package body Babel.Stores.Local is
             if Kind = Ordinary_File then
                if Filter.Is_Accepted (Kind, Path, Name) then
                   New_File.Name := Ada.Strings.Unbounded.To_Unbounded_String (Name);
+                  New_File.Path := Ada.Strings.Unbounded.To_Unbounded_String (Path);
                   New_File.Size := Get_File_Size (Ent);
                   Into.Add_File (Path, New_File);
                end if;
