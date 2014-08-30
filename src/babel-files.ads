@@ -30,11 +30,15 @@ package Babel.Files is
       Name   : Ada.Strings.Unbounded.Unbounded_String;
       Size   : Ada.Directories.File_Size;
       SHA1   : Util.Encoders.SHA1.Hash_Array;
-      Status : File_Status := FILE_UNCHANGED;
+      Status : File_Status := NEW_FILE;
+      Path   : Ada.Strings.Unbounded.Unbounded_String;
    end record;
 
    --  Return true if the file was modified and need a backup.
    function Is_Modified (Element : in File) return Boolean;
+
+   --  Return the path for the file.
+   function Get_Path (Element : in File) return String;
 
    type File_Container is limited interface;
 
