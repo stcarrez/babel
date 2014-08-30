@@ -56,7 +56,7 @@ package Babel.Strategies is
    --  Backup the file from the local buffer into the write store.
    procedure Backup_File (Strategy : in Strategy_Type;
                           File     : in Babel.Files.File;
-                          Content  : in Babel.Files.Buffers.Buffer_Access);
+                          Content  : in out Babel.Files.Buffers.Buffer_Access);
 
    procedure Execute (Strategy : in out Strategy_Type) is abstract;
 
