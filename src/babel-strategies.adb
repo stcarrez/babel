@@ -17,10 +17,16 @@
 -----------------------------------------------------------------------
 pragma Ada_2012;
 
+with Util.Log.Loggers;
+with Util.Encoders.Base16;
 with Babel.Files;
 with Babel.Files.Buffers;
 with Babel.Stores;
 package body Babel.Strategies is
+
+   Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("Babel.Strategies");
+
+   Hex_Encoder : Util.Encoders.Base16.Encoder;
 
    --  ------------------------------
    --  Allocate a buffer to read the file content.
@@ -55,7 +61,7 @@ package body Babel.Strategies is
    procedure Read_File (Strategy : in Strategy_Type;
                         File     : in Babel.Files.File;
                         Into     : in Babel.Files.Buffers.Buffer_Access) is
-      Path : constant String := "";
+      Path : constant String := Babel.Files.Get_Path (File);
    begin
       Strategy.Read_Store.Read (Path, Into.all);
    end Read_File;
@@ -64,17 +70,25 @@ package body Babel.Strategies is
    procedure Write_File (Strategy : in Strategy_Type;
                          File     : in Babel.Files.File;
                          Content  : in Babel.Files.Buffers.Buffer_Access) is
-      Path : constant String := "";
+      Path : constant String := Babel.Files.Get_Path (File);
    begin
-      Strategy.Write_Store.Read (Path, Content.all);
+      Strategy.Write_Store.Write (Path, Content.all);
    end Write_File;
+
+   procedure Print_Sha (File : in Babel.Files.File) is
+      Sha : constant String := Hex_Encoder.Transform (File.SHA1);
+   begin
+      Log.Info (Babel.Files.Get_Path (File) & " => " & Sha);
+   end Print_Sha;
 
    --  Backup the file from the local buffer into the write store.
    procedure Backup_File (Strategy : in Strategy_Type;
                           File     : in Babel.Files.File;
-                          Content  : in Babel.Files.Buffers.Buffer_Access) is
+                          Content  : in out Babel.Files.Buffers.Buffer_Access) is
    begin
-      null;
+      Print_Sha (File);
+      Strategy.Write_File (File, Content);
+      Strategy.Release_Buffer (Content);
    end Backup_File;
 
    procedure Scan (Strategy : in out Strategy_Type;
