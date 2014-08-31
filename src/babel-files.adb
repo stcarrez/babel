@@ -29,6 +29,20 @@ package body Babel.Files is
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("Bkp.Files");
 
    --  ------------------------------
+   --  Allocate a File_Type entry with the given name for the directory.
+   --  ------------------------------
+   function Allocate (Name : in String;
+                      Dir  : in Directory_Type) return File_Type is
+      Result : constant File_Type := new File '(Len    => Name'Length,
+                                                Id     => NO_IDENTIFIER,
+                                                Dir    => Dir,
+                                                Name   => Name,
+                                                others => <>);
+   begin
+      return Result;
+   end Allocate;
+
+   --  ------------------------------
    --  Return true if the file was modified and need a backup.
    --  ------------------------------
    function Is_Modified (Element : in File) return Boolean is
