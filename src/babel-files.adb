@@ -68,10 +68,21 @@ package body Babel.Files is
    --  ------------------------------
    --  Return the path for the file.
    --  ------------------------------
-   function Get_Path (Element : in File) return String is
+   function Get_Path (Element : in File_Type) return String is
    begin
-      return Util.Files.Compose (Ada.Strings.Unbounded.To_String (Element.Path),
-                                 Ada.Strings.Unbounded.To_String (Element.Name));
+      if Element.Dir = null then
+         return Element.Name;
+      else
+         return Util.Files.Compose (Get_Path (Element.Dir), Element.Name);
+      end if;
+   end Get_Path;
+
+   --  ------------------------------
+   --  Return the path for the directory.
+   --  ------------------------------
+   function Get_Path (Element : in Directory_Type) return String is
+   begin
+      return Ada.Strings.Unbounded.To_String (Element.Path);
    end Get_Path;
 
 end Babel.Files;
