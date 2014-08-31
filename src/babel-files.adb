@@ -74,20 +74,4 @@ package body Babel.Files is
                                  Ada.Strings.Unbounded.To_String (Element.Name));
    end Get_Path;
 
-   overriding
-   procedure Add_File (Into    : in out File_Queue;
-                       Path    : in String;
-                       Element : in File) is
-   begin
-      Into.Queue.Enqueue (Element);
-   end Add_File;
-
-   overriding
-   procedure Add_Directory (Into : in out File_Queue;
-                            Path : in String;
-                            Name : in String) is
-   begin
-      Into.Directories.Append (Util.Files.Compose (Path, Name));
-   end Add_Directory;
-
 end Babel.Files;
