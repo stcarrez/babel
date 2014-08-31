@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  bkp-files -- File and directories
+--  babel-files-maps -- Hash maps for files and directories
 --  Copyright (C) 2014 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
 --
@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 
 with Ada.Containers.Hashed_Maps;
+with Util.Strings;
 
 package Babel.Files.Maps is
 
@@ -32,6 +33,13 @@ package Babel.Files.Maps is
                                  Equivalent_Keys => Util.Strings."=",
                                  "="             => "=");
 
+   subtype File_Map is File_Maps.Map;
+   subtype File_Cursor is File_Maps.Cursor;
+
+   --  Find the file with the given name in the file map.
+   function Find (From : in File_Map;
+                  Name : in String) return File_Cursor;
+
    --  Hash string -> Directory
    package Directory_Maps is new
      Ada.Containers.Hashed_Maps (Key_Type        => Util.Strings.Name_Access,
@@ -39,5 +47,8 @@ package Babel.Files.Maps is
                                  Hash            => Util.Strings.Hash,
                                  Equivalent_Keys => Util.Strings."=",
                                  "="             => "=");
+
+   subtype Directory_Map is Directory_Maps.Map;
+   subtype Directory_Cursor is Directory_Maps.Cursor;
 
 end Babel.Files.Maps;
