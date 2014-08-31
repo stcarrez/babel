@@ -45,17 +45,17 @@ package Babel.Strategies is
 
    --  Read the file from the read store into the local buffer.
    procedure Read_File (Strategy : in Strategy_Type;
-                        File     : in Babel.Files.File;
+                        File     : in Babel.Files.File_Type;
                         Into     : in Babel.Files.Buffers.Buffer_Access);
 
    --  Write the file from the local buffer into the write store.
    procedure Write_File (Strategy : in Strategy_Type;
-                         File     : in Babel.Files.File;
+                         File     : in Babel.Files.File_Type;
                          Content  : in Babel.Files.Buffers.Buffer_Access);
 
    --  Backup the file from the local buffer into the write store.
    procedure Backup_File (Strategy : in Strategy_Type;
-                          File     : in Babel.Files.File;
+                          File     : in Babel.Files.File_Type;
                           Content  : in out Babel.Files.Buffers.Buffer_Access);
 
    procedure Execute (Strategy : in out Strategy_Type) is abstract;
