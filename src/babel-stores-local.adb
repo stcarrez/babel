@@ -18,10 +18,18 @@
 with Ada.Directories;
 with Ada.Strings.Unbounded;
 with Ada.Streams.Stream_IO;
+with Interfaces.C.Strings;
+with System.OS_Constants;
+
 with Util.Log.Loggers;
 with Util.Files;
+with Util.Systems.Os;
+with Util.Streams.Raw;
 with Interfaces;
 package body Babel.Stores.Local is
+
+   function Errno return Integer;
+   pragma Import (C, errno, "__get_errno");
 
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("Babel.Stores.Local");
 
@@ -64,6 +72,32 @@ package body Babel.Stores.Local is
       Log.Info ("Read {0} -> {1}", Abs_Path, Ada.Streams.Stream_Element_Offset'Image (Into.Last));
    end Read;
 
+   procedure Open (Store  : in out Local_Store_Type;
+                   Stream : in out Util.Streams.Raw.Raw_Stream;
+                   Path   : in String) is
+      use Util.Systems.Os;
+      use type Interfaces.C.int;
+
+      File : Util.Systems.Os.File_Type;
+      Name : Util.Systems.Os.Ptr := Interfaces.C.Strings.New_String (Path);
+   begin
+      File := Util.Systems.Os.Sys_Open (Name, O_CREAT + O_WRONLY, 8#644#);
+      if File < 0 then
+         if Errno = System.OS_Constants.ENOENT then
+            declare
+               Dir : constant String := Ada.Directories.Containing_Directory (Path);
+            begin
+               Ada.Directories.Create_Path (Dir);
+            end;
+            File := Util.Systems.Os.Sys_Open (Name, O_CREAT + O_WRONLY, 8#644#);
+         end if;
+      end if;
+      if File < 0 then
+         raise Ada.Streams.Stream_IO.Name_Error with "Cannot create " & Path;
+      end if;
+      Stream.Initialize (File);
+      Interfaces.C.Strings.Free (Name);
+   end Open;
 
    procedure Write (Store : in out Local_Store_Type;
                     Path  : in String;
@@ -71,20 +105,14 @@ package body Babel.Stores.Local is
       use Ada.Strings.Unbounded;
       use type Ada.Streams.Stream_Element_Offset;
 
-      File     : Ada.Streams.Stream_IO.File_Type;
       Abs_Path : constant String := Store.Get_Absolute_Path (Path);
+      Stream   : Util.Streams.Raw.Raw_Stream;
    begin
       Log.Info ("Write {0}", Abs_Path);
 
-      begin
-         Ada.Streams.Stream_IO.Create (File, Ada.Streams.Stream_IO.Out_File, Abs_Path);
-      exception
-         when Ada.Streams.Stream_IO.Name_Error =>
-            Log.Info ("Create {0}", Abs_Path);
-            Ada.Streams.Stream_IO.Create (File, Ada.Streams.Stream_IO.Out_File, Abs_Path);
-      end;
-      Ada.Streams.Stream_IO.Write (File, Into.Data (Into.Data'First .. Into.Last));
-      Ada.Streams.Stream_IO.Close (File);
+      Store.Open (Stream, Abs_Path);
+      Stream.Write (Into.Data (Into.Data'First .. Into.Last));
+      Stream.Close;
    end Write;
 
    procedure Scan (Store  : in out Local_Store_Type;
