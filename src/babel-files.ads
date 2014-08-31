@@ -55,6 +55,10 @@ package Babel.Files is
    function Allocate (Name : in String;
                       Dir  : in Directory_Type) return File_Type;
 
+   --  Allocate a Directory_Type entry with the given name for the directory.
+   function Allocate (Name : in String;
+                      Dir  : in Directory_Type) return Directory_Type;
+
    type File (Len : Positive) is record
       Id     : File_Identifier := NO_IDENTIFIER;
       Size   : File_Size       := 0;
