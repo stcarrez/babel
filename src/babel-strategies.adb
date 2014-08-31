@@ -18,15 +18,12 @@
 pragma Ada_2012;
 
 with Util.Log.Loggers;
-with Util.Encoders.Base16;
 with Babel.Files;
 with Babel.Files.Buffers;
 with Babel.Stores;
 package body Babel.Strategies is
 
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("Babel.Strategies");
-
-   Hex_Encoder : Util.Encoders.Base16.Encoder;
 
    --  ------------------------------
    --  Allocate a buffer to read the file content.
@@ -59,7 +56,7 @@ package body Babel.Strategies is
 
    --  Read the file from the read store into the local buffer.
    procedure Read_File (Strategy : in Strategy_Type;
-                        File     : in Babel.Files.File;
+                        File     : in Babel.Files.File_Type;
                         Into     : in Babel.Files.Buffers.Buffer_Access) is
       Path : constant String := Babel.Files.Get_Path (File);
    begin
@@ -68,22 +65,22 @@ package body Babel.Strategies is
 
    --  Write the file from the local buffer into the write store.
    procedure Write_File (Strategy : in Strategy_Type;
-                         File     : in Babel.Files.File;
+                         File     : in Babel.Files.File_Type;
                          Content  : in Babel.Files.Buffers.Buffer_Access) is
       Path : constant String := Babel.Files.Get_Path (File);
    begin
       Strategy.Write_Store.Write (Path, Content.all);
    end Write_File;
 
-   procedure Print_Sha (File : in Babel.Files.File) is
-      Sha : constant String := Hex_Encoder.Transform (File.SHA1);
+   procedure Print_Sha (File : in Babel.Files.File_Type) is
+      Sha : constant String := Babel.Files.Get_SHA1 (File);
    begin
       Log.Info (Babel.Files.Get_Path (File) & " => " & Sha);
    end Print_Sha;
 
    --  Backup the file from the local buffer into the write store.
    procedure Backup_File (Strategy : in Strategy_Type;
-                          File     : in Babel.Files.File;
+                          File     : in Babel.Files.File_Type;
                           Content  : in out Babel.Files.Buffers.Buffer_Access) is
    begin
       Print_Sha (File);
