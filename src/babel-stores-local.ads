@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Strings.Unbounded;
+with Util.Streams.Raw;
 
 package Babel.Stores.Local is
 
@@ -40,6 +41,10 @@ package Babel.Stores.Local is
                    Path   : in String;
                    Into   : in out Babel.Files.File_Container'Class;
                    Filter : in Babel.Filters.Filter_Type'Class);
+
+   procedure Open (Store  : in out Local_Store_Type;
+                   Stream : in out Util.Streams.Raw.Raw_Stream;
+                   Path   : in String);
 
    --  Set the root directory for the local store.
    procedure Set_Root_Directory (Store : in out Local_Store_Type;
