@@ -39,6 +39,7 @@ package Babel.Files is
    type Directory_Type_Array_Access is access all Directory_Type_Array;
 
    NO_DIRECTORY : constant Directory_Type;
+   NO_FILE      : constant File_Type;
 
    type Status_Type is mod 2**16;
 
@@ -111,6 +112,11 @@ package Babel.Files is
                             Path : in String;
                             Name : in String) is abstract;
 
+   --  Find the file with the given name in this file container.
+   --  Returns NO_FILE if the file was not found.
+   function Find (From : in File_Container;
+                  Name : in String) return File_Type is abstract;
+
 private
 
    type Directory (Len : Positive) is record
@@ -130,5 +136,6 @@ private
    type Directory_Type is access all Directory;
 
    NO_DIRECTORY : constant Directory_Type := null;
+   NO_FILE      : constant File_Type := null;
 
 end Babel.Files;
