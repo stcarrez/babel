@@ -58,6 +58,14 @@ package body Babel.Files is
    end Is_Modified;
 
    --  ------------------------------
+   --  Set the file as modified.
+   --  ------------------------------
+   procedure Set_Modified (Element : in File_Type) is
+   begin
+      Element.Status := Element.Status or FILE_MODIFIED;
+   end Set_Modified;
+
+   --  ------------------------------
    --  Return the path for the file.
    --  ------------------------------
    function Get_Path (Element : in File) return String is
