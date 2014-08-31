@@ -16,29 +16,71 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Strings.Unbounded;
+with Ada.Calendar;
 with Ada.Directories;
 with Ada.Containers.Vectors;
 with Util.Encoders.SHA1;
 with Util.Concurrent.Fifos;
 with Util.Strings.Vectors;
+with ADO;
 with Babel.Base.Models;
 package Babel.Files is
 
-   type File_Status is (NEW_FILE, FILE_MODIFIED, FILE_UNCHANGED);
+   NO_IDENTIFIER : constant ADO.Identifier := ADO.NO_IDENTIFIER;
 
-   type File is record
-      Name   : Ada.Strings.Unbounded.Unbounded_String;
-      Size   : Ada.Directories.File_Size;
+   subtype File_Identifier is ADO.Identifier;
+   subtype Directory_Identifier is ADO.Identifier;
+   subtype File_Size is Long_Long_Integer;
+   type File_Mode is mod 2**16;
+   type Uid_Type is mod 2**16;
+   type Gid_Type is mod 2**16;
+
+   type File_Type is private;
+   type File_Type_Array is array (Positive range <>) of File_Type;
+   type File_Type_Array_Access is access all File_Type_Array;
+
+   type Directory_Type is private;
+   type Directory_Type_Array is array (Positive range <>) of Directory_Type;
+   type Directory_Type_Array_Access is access all Directory_Type_Array;
+
+   NO_DIRECTORY : constant Directory_Type;
+
+   type Status_Type is mod 2**16;
+
+   --  The file was modified.
+   FILE_MODIFIED : constant Status_Type := 16#0001#;
+
+   --  There was some error while processing this file.
+   FILE_ERROR    : constant Status_Type := 16#8000#;
+
+   --  The SHA1 signature for the file is known and valid.
+   FILE_HAS_SHA1 : constant Status_Type := 16#0002#;
+
+   --  Allocate a File_Type entry with the given name for the directory.
+   function Allocate (Name : in String;
+                      Dir  : in Directory_Type) return File_Type;
+
+   type File (Len : Positive) is record
+      Id     : File_Identifier := NO_IDENTIFIER;
+      Size   : File_Size       := 0;
+      Dir    : Directory_Type  := NO_DIRECTORY;
+      Mode   : File_Mode       := 8#644#;
+      User   : Uid_Type        := 0;
+      Group  : Gid_Type        := 0;
+      Status : Status_Type     := 0;
+      Date   : Ada.Calendar.Time;
       SHA1   : Util.Encoders.SHA1.Hash_Array;
-      Status : File_Status := NEW_FILE;
-      Path   : Ada.Strings.Unbounded.Unbounded_String;
+      Name   : aliased String (1 .. Len);
    end record;
 
    --  Return true if the file was modified and need a backup.
-   function Is_Modified (Element : in File) return Boolean;
+   function Is_Modified (Element : in File_Type) return Boolean;
+
+   --  Set the file as modified.
+   procedure Set_Modified (Element : in File_Type);
 
    --  Return the path for the file.
-   function Get_Path (Element : in File) return String;
+   function Get_Path (Element : in File_Type) return String;
 
    type File_Container is limited interface;
 
@@ -52,79 +94,60 @@ package Babel.Files is
                             Path : in String;
                             Name : in String) is abstract;
 
-   --  package Babel.Strategies.Flow/Optimize/Small/Larges/Default/Immediate/Simple/Pipeline/Serial
-   --  File name
-   --  Directory info
-   --  File ID or null
-   --  File size         => sha1, file status, backup
-   package File_Fifo is new Util.Concurrent.Fifos (Element_Type     => File,
-                                                   Default_Size     => 100,
-                                                   Clear_On_Dequeue => True);
---
---     procedure Execute (Backup : in out Small_Files_Strategy;
---                        Queue  : in out File_Queue) is
---     begin
---        loop
---           Queue.Dequeue (File, 1.0);
---           --  load file
---           --  compute sha1
---           --  if modified then backup file
---        end loop;
---
---     exception
---        when File_Fifo.Timeout =>
---           null;
---     end Execute;
-
-   type File_Queue is limited new File_Container with record
-      Queue       : File_Fifo.Fifo;
-      Directories : Util.Strings.Vectors.Vector;
-   end record;
-
-   overriding
-   procedure Add_File (Into    : in out File_Queue;
-                       Path    : in String;
-                       Element : in File);
-
-   overriding
-   procedure Add_Directory (Into : in out File_Queue;
-                            Path : in String;
-                            Name : in String);
 
    procedure Compute_Sha1 (Path : in String;
                            Into : in out File);
 
-   package File_Vectors is
-      new Ada.Containers.Vectors (Index_Type   => Positive,
-                                  Element_Type => File,
-                                  "="          => "=");
+--     package File_Vectors is
+--        new Ada.Containers.Vectors (Index_Type   => Positive,
+--                                    Element_Type => File,
+--                                    "="          => "=");
 
-   type Directory_Vector;
-   type Directory_Vector_Access is access all Directory_Vector;
+--     type Directory_Vector;
+--     type Directory_Vector_Access is access all Directory_Vector;
 
-   type Directory is record -- new File_Container with record
-      Name      : Ada.Strings.Unbounded.Unbounded_String;
-      Files     : File_Vectors.Vector;
-      Children  : Directory_Vector_Access;
-      Tot_Size  : Ada.Directories.File_Size;
-      Tot_Files : Natural := 0;
-      Tot_Dirs  : Natural := 0;
-      Depth     : Natural := 0;
+--     type Directory is record -- new File_Container with record
+--        Name      : Ada.Strings.Unbounded.Unbounded_String;
+--        Files     : File_Vectors.Vector;
+--        Children  : Directory_Vector_Access;
+--        Tot_Size  : Ada.Directories.File_Size;
+--        Tot_Files : Natural := 0;
+--        Tot_Dirs  : Natural := 0;
+--        Depth     : Natural := 0;
+--     end record;
+--
+--     package Directory_Vectors is
+--        new Ada.Containers.Vectors (Index_Type   => Positive,
+--                                    Element_Type => Directory,
+--                                    "="          => "=");
+--
+--     type Directory_Vector is new Directory_Vectors.Vector with null record;
+--
+--     procedure Scan (Path : in String;
+--                     Into : in out Directory_Type);
+--
+--     procedure Iterate_Files (Path   : in String;
+--                              Dir    : in out Directory;
+--                              Depth  : in Natural;
+--                              Update : access procedure (P : in String; F : in out File));
+
+private
+
+   type Directory (Len : Positive) is record
+      Id       : Directory_Identifier := NO_IDENTIFIER;
+      Parent   : Directory_Type;
+      Mode     : File_Mode := 8#755#;
+      User     : Uid_Type  := 0;
+      Group    : Gid_Type  := 0;
+      Files    : File_Type_Array_Access;
+      Children : Directory_Type_Array_Access;
+      Name     : aliased String (1 .. Len);
    end record;
 
-   package Directory_Vectors is
-      new Ada.Containers.Vectors (Index_Type   => Positive,
-                                  Element_Type => Directory,
-                                  "="          => "=");
+   type File_Type is access all File;
 
-   type Directory_Vector is new Directory_Vectors.Vector with null record;
+   type Directory_Type is access all Directory;
 
-   procedure Scan (Path : in String;
-                   Into : in out Directory);
-
-   procedure Iterate_Files (Path   : in String;
-                            Dir    : in out Directory;
-                            Depth  : in Natural;
-                            Update : access procedure (P : in String; F : in out File));
+   NO_DIRECTORY : constant Directory_Type := null;
 
 end Babel.Files;
