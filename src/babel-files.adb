@@ -45,9 +45,16 @@ package body Babel.Files is
    --  ------------------------------
    --  Return true if the file was modified and need a backup.
    --  ------------------------------
-   function Is_Modified (Element : in File) return Boolean is
+   function Is_Modified (Element : in File_Type) return Boolean is
+      use type ADO.Identifier;
    begin
-      return Element.Status /= FILE_UNCHANGED;
+      if Element.Id = NO_IDENTIFIER then
+         return True;
+      elsif (Element.Status and FILE_MODIFIED) /= 0 then
+         return True;
+      else
+         return False;
+      end if;
    end Is_Modified;
 
    --  ------------------------------
