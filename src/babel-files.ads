@@ -85,6 +85,11 @@ package Babel.Files is
    procedure Set_Signature (Element   : in File_Type;
                             Signature : in Util.Encoders.SHA1.Hash_Array);
 
+   --  Set the file size.  If the new size is different, the FILE_MODIFIED
+   --  flag is set on the file.
+   procedure Set_Size (Element : in File_Type;
+                       Size    : in File_Size);
+
    --  Return the path for the file.
    function Get_Path (Element : in File_Type) return String;
 
