@@ -90,27 +90,6 @@ package body Babel.Files is
       Into.Directories.Append (Util.Files.Compose (Path, Name));
    end Add_Directory;
 
-   procedure Compute_Sha1 (Path : in String;
-                           Into : in out File) is
-      use Ada.Strings.Unbounded;
-      use type Ada.Streams.Stream_Element_Offset;
-
-      File : Ada.Streams.Stream_IO.File_Type;
-      Name : constant String := Path & "/" & To_String (Into.Name);
-      Last : Ada.Streams.Stream_Element_Offset;
-      Buf  : Ada.Streams.Stream_Element_Array (0 .. 32_767);
-      Ctx  : Util.Encoders.SHA1.Context;
-   begin
-      Ada.Streams.Stream_IO.Open (File, Ada.Streams.Stream_IO.In_File, Name);
-      loop
-         Ada.Streams.Stream_IO.Read (File, Buf, Last);
-         Util.Encoders.SHA1.Update (Ctx, Buf (Buf'First .. Last));
-         exit when Last /= Buf'Last;
-      end loop;
-      Ada.Streams.Stream_IO.Close (File);
-      Util.Encoders.SHA1.Finish (Ctx, Into.SHA1);
-   end Compute_Sha1;
-
    procedure Iterate_Files (Path   : in String;
                             Dir    : in out Directory;
                             Depth  : in Natural;
