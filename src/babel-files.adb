@@ -90,41 +90,6 @@ package body Babel.Files is
       Into.Directories.Append (Util.Files.Compose (Path, Name));
    end Add_Directory;
 
-   procedure Iterate_Files (Path   : in String;
-                            Dir    : in out Directory;
-                            Depth  : in Natural;
-                            Update : access procedure (P : in String; F : in out File)) is
-      use Ada.Strings.Unbounded;
-
-      Iter : File_Vectors.Cursor := Dir.Files.First;
-
-      procedure Iterate_File (Item : in out File) is
-      begin
-         Update (Path, Item);
-      end Iterate_File;
-
-      procedure Iterate_Child (Item : in out Directory) is
-      begin
-         Iterate_Files (Path & "/" & To_String (Item.Name), Item, Depth - 1, Update);
-      end Iterate_Child;
-
-   begin
-      while File_Vectors.Has_Element (Iter) loop
-         Dir.Files.Update_Element (Iter, Iterate_File'Access);
-         File_Vectors.Next (Iter);
-      end loop;
-      if Depth > 0 and then Dir.Children /= null then
-         declare
-            Dir_Iter : Directory_Vectors.Cursor := Dir.Children.First;
-         begin
-            while Directory_Vectors.Has_Element (Dir_Iter) loop
-               Dir.Children.Update_Element (Dir_Iter, Iterate_Child'Access);
-               Directory_Vectors.Next (Dir_Iter);
-            end loop;
-         end;
-      end if;
-   end Iterate_Files;
-
    procedure Scan_Files (Path : in String;
                          Into : in out Directory) is
       Iter : File_Vectors.Cursor := Into.Files.First;
