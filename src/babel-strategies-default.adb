@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 pragma Ada_2012;
 with Babel.Files.Signatures;
+with Util.Encoders.SHA1;
 
 package body Babel.Strategies.Default is
 
@@ -39,11 +40,13 @@ package body Babel.Strategies.Default is
    overriding
    procedure Execute (Strategy : in out Default_Strategy_Type) is
       Content : Babel.Files.Buffers.Buffer_Access := Strategy.Allocate_Buffer;
-      File    : Babel.Files.File;
+      File    : Babel.Files.File_Type;
+      SHA1    : Util.Encoders.SHA1.Hash_Array;
    begin
       Strategy.Queue.Queue.Dequeue (File, 1.0);
       Strategy.Read_File (File, Content);
-      Babel.Files.Signatures.Sha1 (Content.all, File.SHA1);
+      Babel.Files.Signatures.Sha1 (Content.all, SHA1);
+      Babel.Files.Set_Signature (File, SHA1);
       if Babel.Files.Is_Modified (File) then
          Strategy.Backup_File (File, Content);
       else
