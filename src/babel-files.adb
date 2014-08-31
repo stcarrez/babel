@@ -18,9 +18,12 @@
 
 with Util.Log.Loggers;
 with Util.Files;
+with Util.Encoders.Base16;
 package body Babel.Files is
 
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("Bkp.Files");
+
+   Hex_Encoder : Util.Encoders.Base16.Encoder;
 
    --  ------------------------------
    --  Allocate a File_Type entry with the given name for the directory.
@@ -78,5 +81,13 @@ package body Babel.Files is
    begin
       return Ada.Strings.Unbounded.To_String (Element.Path);
    end Get_Path;
+
+   --  ------------------------------
+   --  Return the SHA1 signature computed for the file.
+   --  ------------------------------
+   function Get_SHA1 (Element : in File_Type) return String is
+   begin
+      return Hex_Encoder.Transform (Element.SHA1);
+   end Get_SHA1;
 
 end Babel.Files;
