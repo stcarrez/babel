@@ -78,6 +78,13 @@ package Babel.Files is
    --  Set the file as modified.
    procedure Set_Modified (Element : in File_Type);
 
+   --  Set the SHA1 signature that was computed for this file.
+   --  If the computed signature is different from the current signature,
+   --  the FILE_MODIFIED flag is set on the file.  The FILE_HAS_SHA1 flag
+   --  is set on the file.
+   procedure Set_Signature (Element   : in File_Type;
+                            Signature : in Util.Encoders.SHA1.Hash_Array);
+
    --  Return the path for the file.
    function Get_Path (Element : in File_Type) return String;
 
