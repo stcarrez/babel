@@ -15,15 +15,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with Ada.Strings.Unbounded;
-with Ada.Directories;
-with Ada.Containers.Vectors;
-with Ada.Text_IO;
-with Ada.Exceptions;
-with Ada.Streams.Stream_IO;
+
 with Util.Log.Loggers;
 with Util.Files;
-with Interfaces.C;
 package body Babel.Files is
 
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("Bkp.Files");
