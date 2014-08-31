@@ -100,6 +100,19 @@ package body Babel.Files is
    end Set_Signature;
 
    --  ------------------------------
+   --  Set the file size.  If the new size is different, the FILE_MODIFIED
+   --  flag is set on the file.
+   --  ------------------------------
+   procedure Set_Size (Element : in File_Type;
+                       Size    : in File_Size) is
+   begin
+      if Element.Size /= Size then
+         Element.Size := Size;
+         Element.Status := Element.Status or FILE_MODIFIED;
+      end if;
+   end Set_Size;
+
+   --  ------------------------------
    --  Return the path for the file.
    --  ------------------------------
    function Get_Path (Element : in File_Type) return String is
