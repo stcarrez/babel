@@ -80,6 +80,9 @@ package Babel.Files is
    --  Return the path for the directory.
    function Get_Path (Element : in Directory_Type) return String;
 
+   --  Return the SHA1 signature computed for the file.
+   function Get_SHA1 (Element : in File_Type) return String;
+
    type File_Container is limited interface;
 
    --  Add the file with the given name in the container.
