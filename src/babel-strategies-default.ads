@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 pragma Ada_2012;
+with Babel.Files.Queues;
 package Babel.Strategies.Default is
 
    type Default_Strategy_Type is new Babel.Strategies.Strategy_Type with private;
@@ -44,7 +45,7 @@ package Babel.Strategies.Default is
 private
 
    type Default_Strategy_Type is new Babel.Strategies.Strategy_Type with record
-      Queue : Babel.Files.File_Queue;
+      Queue : Babel.Files.Queues.File_Queue;
    end record;
 
 end Babel.Strategies.Default;
