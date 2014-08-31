@@ -116,6 +116,10 @@ package Babel.Files is
    function Create (Into : in File_Container;
                     Name : in String) return File_Type is abstract;
 
+   --  Create a new directory instance with the given name in the container.
+   function Create (Into : in File_Container;
+                    Name : in String) return Directory_Type is abstract;
+
    --  Find the file with the given name in this file container.
    --  Returns NO_FILE if the file was not found.
    function Find (From : in File_Container;
