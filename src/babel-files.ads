@@ -15,15 +15,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with Ada.Strings.Unbounded;
 with Ada.Calendar;
-with Ada.Directories;
-with Ada.Containers.Vectors;
+with Ada.Strings.Unbounded;
 with Util.Encoders.SHA1;
-with Util.Concurrent.Fifos;
-with Util.Strings.Vectors;
 with ADO;
-with Babel.Base.Models;
 package Babel.Files is
 
    NO_IDENTIFIER : constant ADO.Identifier := ADO.NO_IDENTIFIER;
@@ -82,6 +77,9 @@ package Babel.Files is
    --  Return the path for the file.
    function Get_Path (Element : in File_Type) return String;
 
+   --  Return the path for the directory.
+   function Get_Path (Element : in Directory_Type) return String;
+
    type File_Container is limited interface;
 
    --  Add the file with the given name in the container.
@@ -94,43 +92,6 @@ package Babel.Files is
                             Path : in String;
                             Name : in String) is abstract;
 
-
-   procedure Compute_Sha1 (Path : in String;
-                           Into : in out File);
-
---     package File_Vectors is
---        new Ada.Containers.Vectors (Index_Type   => Positive,
---                                    Element_Type => File,
---                                    "="          => "=");
-
---     type Directory_Vector;
---     type Directory_Vector_Access is access all Directory_Vector;
-
---     type Directory is record -- new File_Container with record
---        Name      : Ada.Strings.Unbounded.Unbounded_String;
---        Files     : File_Vectors.Vector;
---        Children  : Directory_Vector_Access;
---        Tot_Size  : Ada.Directories.File_Size;
---        Tot_Files : Natural := 0;
---        Tot_Dirs  : Natural := 0;
---        Depth     : Natural := 0;
---     end record;
---
---     package Directory_Vectors is
---        new Ada.Containers.Vectors (Index_Type   => Positive,
---                                    Element_Type => Directory,
---                                    "="          => "=");
---
---     type Directory_Vector is new Directory_Vectors.Vector with null record;
---
---     procedure Scan (Path : in String;
---                     Into : in out Directory_Type);
---
---     procedure Iterate_Files (Path   : in String;
---                              Dir    : in out Directory;
---                              Depth  : in Natural;
---                              Update : access procedure (P : in String; F : in out File));
-
 private
 
    type Directory (Len : Positive) is record
@@ -141,6 +102,7 @@ private
       Group    : Gid_Type  := 0;
       Files    : File_Type_Array_Access;
       Children : Directory_Type_Array_Access;
+      Path     : Ada.Strings.Unbounded.Unbounded_String;
       Name     : aliased String (1 .. Len);
    end record;
 
