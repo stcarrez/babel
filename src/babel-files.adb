@@ -40,6 +40,26 @@ package body Babel.Files is
    end Allocate;
 
    --  ------------------------------
+   --  Allocate a Directory_Type entry with the given name for the directory.
+   --  ------------------------------
+   function Allocate (Name : in String;
+                      Dir  : in Directory_Type) return Directory_Type is
+      use Ada.Strings.Unbounded;
+
+      Result : constant Directory_Type := new Directory '(Len    => Name'Length,
+                                                          Id     => NO_IDENTIFIER,
+                                                          Parent => Dir,
+                                                          Name   => Name,
+                                                          others => <>);
+   begin
+      if Dir /= null then
+         Result.Path := To_Unbounded_String
+           (Util.Files.Compose (To_String (Dir.Path), Name));
+      end if;
+      return Result;
+   end Allocate;
+
+   --  ------------------------------
    --  Return true if the file was modified and need a backup.
    --  ------------------------------
    function Is_Modified (Element : in File_Type) return Boolean is
