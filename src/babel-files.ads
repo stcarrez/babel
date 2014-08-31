@@ -117,6 +117,11 @@ package Babel.Files is
    function Find (From : in File_Container;
                   Name : in String) return File_Type is abstract;
 
+   --  Find the directory with the given name in this file container.
+   --  Returns NO_DIRECTORY if the directory was not found.
+   function Find (From : in File_Container;
+                  Name : in String) return Directory_Type is abstract;
+
 private
 
    type Directory (Len : Positive) is record
