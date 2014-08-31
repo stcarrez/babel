@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  babel-base -- File filters
+--  babel-base -- Database for files
 --  Copyright (C) 2014 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
 --
@@ -15,7 +15,17 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Ada.Finalization;
+with ADO;
 
 package Babel.Base is
+
+   type Database is abstract new Ada.Finalization.Limited_Controlled with private;
+
+private
+
+   type Database is abstract new Ada.Finalization.Limited_Controlled with record
+      Name : Integer;
+   end record;
 
 end Babel.Base;
