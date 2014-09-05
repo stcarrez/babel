@@ -120,15 +120,12 @@ package body Babel.Stores.Local is
                    Into   : in out Babel.Files.File_Container'Class;
                    Filter : in Babel.Filters.Filter_Type'Class) is
       use Ada.Directories;
-      use type Babel.Files.Directory_Vector_Access;
 
       Search_Filter : constant Ada.Directories.Filter_Type := (Ordinary_File => True,
                                                                Ada.Directories.Directory => True,
                                                                Special_File => False);
       Search   : Search_Type;
       Ent      : Directory_Entry_Type;
-      New_File : Babel.Files.File;
-      Child    : Babel.Files.Directory;
    begin
       Log.Info ("Scan directory {0}", Path);
 
@@ -138,15 +135,23 @@ package body Babel.Stores.Local is
          declare
             Name : constant String    := Simple_Name (Ent);
             Kind : constant File_Kind := Ada.Directories.Kind (Ent);
+            File : Babel.Files.File_Type;
          begin
             if Kind = Ordinary_File then
                if Filter.Is_Accepted (Kind, Path, Name) then
-                  New_File.Name := Ada.Strings.Unbounded.To_Unbounded_String (Name);
-                  New_File.Path := Ada.Strings.Unbounded.To_Unbounded_String (Path);
-                  New_File.Size := Get_File_Size (Ent);
+                  File := Into.Find (Name);
+                  if File = null then
+                     File := Into.Create (Name);
+                  end if;
+                  Babel.Files.Set_Size (Get_File_Size (Ent));
                   Into.Add_File (Path, New_File);
                end if;
             elsif Name /= "." and Name /= ".." and Filter.Is_Accepted (Kind, Path, Name) then
+               Child := Info.Find (Name);
+               if Child = null then
+                  Child := Into.Create (Name);
+               end if;
+               Into.Add_Directory (Child);
 --                 if Into.Children = null then
 --                    Into.Children := new Babel.Files.Directory_Vector;
 --                 end if;
