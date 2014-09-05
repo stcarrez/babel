@@ -131,28 +131,34 @@ package Babel.Files is
    type Default_Container is new File_Container with private;
 
    --  Add the file with the given name in the container.
+   overriding
    procedure Add_File (Into    : in out Default_Container;
                        Element : in File_Type);
 
    --  Add the directory with the given name in the container.
+   overriding
    procedure Add_Directory (Into    : in out Default_Container;
                             Element : in Directory_Type);
 
    --  Create a new file instance with the given name in the container.
+   overriding
    function Create (Into : in Default_Container;
                     Name : in String) return File_Type;
 
    --  Create a new directory instance with the given name in the container.
+   overriding
    function Create (Into : in Default_Container;
                     Name : in String) return Directory_Type;
 
    --  Find the file with the given name in this file container.
    --  Returns NO_FILE if the file was not found.
+   overriding
    function Find (From : in Default_Container;
                   Name : in String) return File_Type;
 
    --  Find the directory with the given name in this file container.
    --  Returns NO_DIRECTORY if the directory was not found.
+   overriding
    function Find (From : in Default_Container;
                   Name : in String) return Directory_Type;
 
