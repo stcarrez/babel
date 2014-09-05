@@ -27,4 +27,68 @@ package body Babel.Files.Maps is
       return From.Find (Key => Name'Unrestricted_Access);
    end Find;
 
+   --  ------------------------------
+   --  Add the file with the given name in the container.
+   --  ------------------------------
+   procedure Add_File (Into    : in out Differential_Container;
+                       Element : in File_Type) is
+      use type ADO.Identifier;
+   begin
+      if Element.Id = ADO.NO_IDENTIFIER then
+         Into.Files.Insert (Element.Name'Unrestricted_Access, Element);
+      end if;
+   end Add_File;
+
+   --  ------------------------------
+   --  Add the directory with the given name in the container.
+   --  ------------------------------
+   procedure Add_Directory (Into    : in out Differential_Container;
+                            Element : in Directory_Type) is
+      use type ADO.Identifier;
+   begin
+      if Element.Id = ADO.NO_IDENTIFIER then
+         Into.Files.Children (Element.Name'Unrestricted_Access, Element);
+      end if;
+   end Add_Directory;
+
+   --  ------------------------------
+   --  Create a new file instance with the given name in the container.
+   --  ------------------------------
+   function Create (Into : in Differential_Container;
+                    Name : in String) return File_Type is
+   begin
+      return Allocate (Name => Name,
+                       Dir  => Into.Current);
+   end Create;
+
+   --  ------------------------------
+   --  Create a new directory instance with the given name in the container.
+   --  ------------------------------
+   function Create (Into : in Differential_Container;
+                    Name : in String) return Directory_Type is
+   begin
+      return Allocate (Name => Name,
+                       Dir  => Into.Current);
+   end Create;
+
+   --  ------------------------------
+   --  Find the file with the given name in this file container.
+   --  Returns NO_FILE if the file was not found.
+   --  ------------------------------
+   function Find (From : in Differential_Container;
+                  Name : in String) return File_Type is
+   begin
+      return Find (From.Files, Name);
+   end Find;
+
+   --  ------------------------------
+   --  Find the directory with the given name in this file container.
+   --  Returns NO_DIRECTORY if the directory was not found.
+   --  ------------------------------
+   function Find (From : in Differential_Container;
+                  Name : in String) return Directory_Type is
+   begin
+      return Find (From.Children, Name);
+   end Find;
+
 end Babel.Files.Maps;
