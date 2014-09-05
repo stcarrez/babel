@@ -104,13 +104,11 @@ package Babel.Files is
 
    --  Add the file with the given name in the container.
    procedure Add_File (Into    : in out File_Container;
-                       Path    : in String;
-                       Element : in File) is abstract;
+                       Element : in File_Type) is abstract;
 
    --  Add the directory with the given name in the container.
-   procedure Add_Directory (Into : in out File_Container;
-                            Path : in String;
-                            Name : in String) is abstract;
+   procedure Add_Directory (Into    : in out File_Container;
+                            Element : in Directory_Type) is abstract;
 
    --  Create a new file instance with the given name in the container.
    function Create (Into : in File_Container;
@@ -130,6 +128,34 @@ package Babel.Files is
    function Find (From : in File_Container;
                   Name : in String) return Directory_Type is abstract;
 
+   type Default_Container is new File_Container with private;
+
+   --  Add the file with the given name in the container.
+   procedure Add_File (Into    : in out Default_Container;
+                       Element : in File_Type);
+
+   --  Add the directory with the given name in the container.
+   procedure Add_Directory (Into    : in out Default_Container;
+                            Element : in Directory_Type);
+
+   --  Create a new file instance with the given name in the container.
+   function Create (Into : in Default_Container;
+                    Name : in String) return File_Type;
+
+   --  Create a new directory instance with the given name in the container.
+   function Create (Into : in Default_Container;
+                    Name : in String) return Directory_Type;
+
+   --  Find the file with the given name in this file container.
+   --  Returns NO_FILE if the file was not found.
+   function Find (From : in Default_Container;
+                  Name : in String) return File_Type;
+
+   --  Find the directory with the given name in this file container.
+   --  Returns NO_DIRECTORY if the directory was not found.
+   function Find (From : in Default_Container;
+                  Name : in String) return Directory_Type;
+
 private
 
    type Directory (Len : Positive) is record
@@ -147,6 +173,10 @@ private
    type File_Type is access all File;
 
    type Directory_Type is access all Directory;
+
+   type Default_Container is new Babel.Files.File_Container with record
+      Current : Directory_Type;
+   end record;
 
    NO_DIRECTORY : constant Directory_Type := null;
    NO_FILE      : constant File_Type := null;
