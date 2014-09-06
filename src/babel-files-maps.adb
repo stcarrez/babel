@@ -35,7 +35,7 @@ package body Babel.Files.Maps is
       use type ADO.Identifier;
    begin
       if Element.Id = ADO.NO_IDENTIFIER then
-         Into.Files.Insert (Element.Name'Unrestricted_Access, Element);
+         Into.Known_Files.Insert (Element.Name'Unrestricted_Access, Element);
       end if;
    end Add_File;
 
@@ -47,7 +47,7 @@ package body Babel.Files.Maps is
       use type ADO.Identifier;
    begin
       if Element.Id = ADO.NO_IDENTIFIER then
-         Into.Files.Children (Element.Name'Unrestricted_Access, Element);
+         Into.Known_Dirs.Insert (Element.Name'Unrestricted_Access, Element);
       end if;
    end Add_Directory;
 
@@ -78,7 +78,7 @@ package body Babel.Files.Maps is
    function Find (From : in Differential_Container;
                   Name : in String) return File_Type is
    begin
-      return Find (From.Files, Name);
+      return Find (From.Known_Files, Name);
    end Find;
 
    --  ------------------------------
@@ -88,7 +88,7 @@ package body Babel.Files.Maps is
    function Find (From : in Differential_Container;
                   Name : in String) return Directory_Type is
    begin
-      return Find (From.Children, Name);
+      return Find (From.Knonwn_Dirs, Name);
    end Find;
 
 end Babel.Files.Maps;
