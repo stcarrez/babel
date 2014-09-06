@@ -189,6 +189,7 @@ package body Babel.Files is
    overriding
    function Find (From : in Default_Container;
                   Name : in String) return File_Type is
+      pragma Unreferenced (From, Name);
    begin
       return NO_FILE;
    end Find;
@@ -200,6 +201,7 @@ package body Babel.Files is
    overriding
    function Find (From : in Default_Container;
                   Name : in String) return Directory_Type is
+      pragma Unreferenced (From, Name);
    begin
       return NO_DIRECTORY;
    end Find;
