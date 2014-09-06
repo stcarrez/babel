@@ -33,15 +33,15 @@ package body Babel.Stores.Local is
 
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("Babel.Stores.Local");
 
-   function Get_File_Size (Ent : in Ada.Directories.Directory_Entry_Type) return Ada.Directories.File_Size is
+   function Get_File_Size (Ent : in Ada.Directories.Directory_Entry_Type) return Babel.Files.File_Size is
       Size : Ada.Directories.File_Size;
    begin
       Size := Ada.Directories.Size (Ent);
-      return Size;
+      return Babel.Files.File_Size (Size);
 
    exception
       when Constraint_Error =>
-         return Ada.Directories.File_Size (Interfaces.Unsigned_32'Last);
+         return Babel.Files.File_Size (Interfaces.Unsigned_32'Last);
    end Get_File_Size;
 
    --  ------------------------------
@@ -120,6 +120,8 @@ package body Babel.Stores.Local is
                    Into   : in out Babel.Files.File_Container'Class;
                    Filter : in Babel.Filters.Filter_Type'Class) is
       use Ada.Directories;
+      use type Babel.Files.File_Type;
+      use type Babel.Files.Directory_Type;
 
       Search_Filter : constant Ada.Directories.Filter_Type := (Ordinary_File => True,
                                                                Ada.Directories.Directory => True,
@@ -136,29 +138,23 @@ package body Babel.Stores.Local is
             Name : constant String    := Simple_Name (Ent);
             Kind : constant File_Kind := Ada.Directories.Kind (Ent);
             File : Babel.Files.File_Type;
+            Dir  : Babel.Files.Directory_Type;
          begin
             if Kind = Ordinary_File then
                if Filter.Is_Accepted (Kind, Path, Name) then
                   File := Into.Find (Name);
-                  if File = null then
+                  if File = Babel.Files.NO_FILE then
                      File := Into.Create (Name);
                   end if;
-                  Babel.Files.Set_Size (Get_File_Size (Ent));
-                  Into.Add_File (Path, New_File);
+                  Babel.Files.Set_Size (File, Get_File_Size (Ent));
+                  Into.Add_File (File);
                end if;
             elsif Name /= "." and Name /= ".." and Filter.Is_Accepted (Kind, Path, Name) then
-               Child := Info.Find (Name);
-               if Child = null then
-                  Child := Into.Create (Name);
+               Dir := Into.Find (Name);
+               if Dir = Babel.Files.NO_DIRECTORY then
+                  Dir := Into.Create (Name);
                end if;
-               Into.Add_Directory (Child);
---                 if Into.Children = null then
---                    Into.Children := new Babel.Files.Directory_Vector;
---                 end if;
---                 Child.Name := Ada.Strings.Unbounded.To_Unbounded_String (Name);
---                 Into.Children.Append (Child);
---                 Into.Tot_Dirs := Into.Tot_Dirs + 1;
-               Into.Add_Directory (Path, Name);
+               Into.Add_Directory (Dir);
             end if;
          end;
       end loop;
