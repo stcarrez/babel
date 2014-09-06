@@ -88,7 +88,19 @@ package body Babel.Files.Maps is
    function Find (From : in Differential_Container;
                   Name : in String) return Directory_Type is
    begin
-      return Find (From.Knonwn_Dirs, Name);
+      return Find (From.Known_Dirs, Name);
    end Find;
+
+   --  ------------------------------
+   --  Set the directory object associated with the container.
+   --  ------------------------------
+   overriding
+   procedure Set_Directory (Into      : in out Differential_Container;
+                            Directory : in Directory_Type) is
+   begin
+      Default_Container (Into).Set_Directory (Directory);
+      Into.Known_Files.Clear;
+      Into.Known_Dirs.Clear;
+   end Set_Directory;
 
 end Babel.Files.Maps;
