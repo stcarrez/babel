@@ -164,6 +164,10 @@ package Babel.Files is
    function Find (From : in Default_Container;
                   Name : in String) return Directory_Type;
 
+   --  Set the directory object associated with the container.
+   procedure Set_Directory (Into      : in out Default_Container;
+                            Directory : in Directory_Type);
+
 private
 
    type File_Type is access all File;
