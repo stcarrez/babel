@@ -206,4 +206,15 @@ package body Babel.Files is
       return NO_DIRECTORY;
    end Find;
 
+   --  ------------------------------
+   --  Set the directory object associated with the container.
+   --  ------------------------------
+   procedure Set_Directory (Into      : in out Default_Container;
+                            Directory : in Directory_Type) is
+   begin
+      Into.Current := Directory;
+      Into.Files.Clear;
+      Into.Dirs.Clear;
+   end Set_Directory;
+
 end Babel.Files;
