@@ -17,6 +17,8 @@
 -----------------------------------------------------------------------
 with Ada.Calendar;
 with Ada.Strings.Unbounded;
+with Ada.Containers.Vectors;
+
 with Util.Encoders.SHA1;
 with ADO;
 package Babel.Files is
@@ -164,6 +166,8 @@ package Babel.Files is
 
 private
 
+   type File_Type is access all File;
+
    type Directory (Len : Positive) is record
       Id       : Directory_Identifier := NO_IDENTIFIER;
       Parent   : Directory_Type;
@@ -176,12 +180,22 @@ private
       Name     : aliased String (1 .. Len);
    end record;
 
-   type File_Type is access all File;
-
    type Directory_Type is access all Directory;
+
+   package File_Vectors is new
+     Ada.Containers.Vectors (Index_Type   => Positive,
+                             Element_Type => File_Type,
+                             "="          => "=");
+
+   package Directory_Vectors is new
+     Ada.Containers.Vectors (Index_Type   => Positive,
+                             Element_Type => Directory_Type,
+                             "="          => "=");
 
    type Default_Container is new Babel.Files.File_Container with record
       Current : Directory_Type;
+      Files   : File_Vectors.Vector;
+      Dirs    : Directory_Vectors.Vector;
    end record;
 
    NO_DIRECTORY : constant Directory_Type := null;
