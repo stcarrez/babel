@@ -140,4 +140,68 @@ package body Babel.Files is
       return Hex_Encoder.Transform (Element.SHA1);
    end Get_SHA1;
 
+   --  ------------------------------
+   --  Add the file with the given name in the container.
+   --  ------------------------------
+   overriding
+   procedure Add_File (Into    : in out Default_Container;
+                       Element : in File_Type) is
+   begin
+      Into.Files.Append (Element);
+   end Add_File;
+
+   --  ------------------------------
+   --  Add the directory with the given name in the container.
+   --  ------------------------------
+   overriding
+   procedure Add_Directory (Into    : in out Default_Container;
+                            Element : in Directory_Type) is
+   begin
+      Into.Dirs.Append (Element);
+   end Add_Directory;
+
+   --  ------------------------------
+   --  Create a new file instance with the given name in the container.
+   --  ------------------------------
+   overriding
+   function Create (Into : in Default_Container;
+                    Name : in String) return File_Type is
+   begin
+      return Allocate (Name => Name,
+                       Dir  => Into.Current);
+   end Create;
+
+   --  ------------------------------
+   --  Create a new directory instance with the given name in the container.
+   --  ------------------------------
+   overriding
+   function Create (Into : in Default_Container;
+                    Name : in String) return Directory_Type is
+   begin
+      return Allocate (Name => Name,
+                       Dir  => Into.Current);
+   end Create;
+
+   --  ------------------------------
+   --  Find the file with the given name in this file container.
+   --  Returns NO_FILE if the file was not found.
+   --  ------------------------------
+   overriding
+   function Find (From : in Default_Container;
+                  Name : in String) return File_Type is
+   begin
+      return NO_FILE;
+   end Find;
+
+   --  ------------------------------
+   --  Find the directory with the given name in this file container.
+   --  Returns NO_DIRECTORY if the directory was not found.
+   --  ------------------------------
+   overriding
+   function Find (From : in Default_Container;
+                  Name : in String) return Directory_Type is
+   begin
+      return NO_DIRECTORY;
+   end Find;
+
 end Babel.Files;
