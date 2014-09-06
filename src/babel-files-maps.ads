@@ -86,6 +86,11 @@ package Babel.Files.Maps is
    function Find (From : in Differential_Container;
                   Name : in String) return Directory_Type;
 
+   --  Set the directory object associated with the container.
+   overriding
+   procedure Set_Directory (Into      : in out Differential_Container;
+                            Directory : in Directory_Type);
+
 private
 
    type Differential_Container is new Babel.Files.Default_Container with record
