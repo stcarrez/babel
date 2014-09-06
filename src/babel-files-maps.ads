@@ -52,7 +52,7 @@ package Babel.Files.Maps is
    subtype Directory_Cursor is Directory_Maps.Cursor;
 
 
-   type Differential_Container is new Babel.Files.File_Container with private;
+   type Differential_Container is new Babel.Files.Default_Container with private;
 
    --  Add the file with the given name in the container.
    overriding
@@ -88,10 +88,9 @@ package Babel.Files.Maps is
 
 private
 
-   type Differential_Container is new Babel.Files.File_Container with record
-      Current  : Directory_Type;
-      Files    : File_Map;
-      Children : Directory_Map;
+   type Differential_Container is new Babel.Files.Default_Container with record
+      Known_Files : File_Map;
+      Known_Dirs  : Directory_Map;
    end record;
 
 end Babel.Files.Maps;
