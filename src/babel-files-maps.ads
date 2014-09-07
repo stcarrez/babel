@@ -40,6 +40,10 @@ package Babel.Files.Maps is
    function Find (From : in File_Map;
                   Name : in String) return File_Cursor;
 
+   --  Find the file with the given name in the file map.
+   function Find (From : in File_Map;
+                  Name : in String) return File_Type;
+
    --  Hash string -> Directory
    package Directory_Maps is new
      Ada.Containers.Hashed_Maps (Key_Type        => Util.Strings.Name_Access,
