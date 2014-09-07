@@ -103,4 +103,16 @@ package body Babel.Files.Maps is
       Into.Known_Dirs.Clear;
    end Set_Directory;
 
+   --  ------------------------------
+   --  Prepare the differential container by setting up the known files and known
+   --  directories.  The <tt>Update</tt> procedure is called to give access to the
+   --  maps that can be updated.
+   --  ------------------------------
+   procedure Prepare (Container : in out Differential_Container;
+                      Update    : access procedure (Files : in out File_Map;
+                                                    Dirs  : in out Directory_Map)) is
+   begin
+      Update (Container.Known_Files, Container.Known_Dirs);
+   end Prepare;
+
 end Babel.Files.Maps;
