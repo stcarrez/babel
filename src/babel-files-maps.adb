@@ -42,6 +42,29 @@ package body Babel.Files.Maps is
    end Find;
 
    --  ------------------------------
+   --  Find the directory with the given name in the directory map.
+   --  ------------------------------
+   function Find (From : in Directory_Map;
+                  Name : in String) return Directory_Cursor is
+   begin
+      return From.Find (Key => Name'Unrestricted_Access);
+   end Find;
+
+   --  ------------------------------
+   --  Find the directory with the given name in the directory map.
+   --  ------------------------------
+   function Find (From : in Directory_Map;
+                  Name : in String) return Directory_Type is
+      Pos : constant Directory_Cursor := From.Find (Key => Name'Unrestricted_Access);
+   begin
+      if Directory_Maps.Has_Element (Pos) then
+         return Directory_Maps.Element (Pos);
+      else
+         return NO_DIRECTORY;
+      end if;
+   end Find;
+
+   --  ------------------------------
    --  Add the file with the given name in the container.
    --  ------------------------------
    procedure Add_File (Into    : in out Differential_Container;
