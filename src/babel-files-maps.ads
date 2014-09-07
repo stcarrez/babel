@@ -55,6 +55,13 @@ package Babel.Files.Maps is
    subtype Directory_Map is Directory_Maps.Map;
    subtype Directory_Cursor is Directory_Maps.Cursor;
 
+   --  Find the directory with the given name in the directory map.
+   function Find (From : in Directory_Map;
+                  Name : in String) return Directory_Cursor;
+
+   --  Find the directory with the given name in the directory map.
+   function Find (From : in Directory_Map;
+                  Name : in String) return Directory_Type;
 
    type Differential_Container is new Babel.Files.Default_Container with private;
 
