@@ -196,6 +196,8 @@ private
                              Element_Type => Directory_Type,
                              "="          => "=");
 
+   subtype Directory_Vector is Directory_Vectors.Vector;
+
    type Default_Container is new Babel.Files.File_Container with record
       Current : Directory_Type;
       Files   : File_Vectors.Vector;
