@@ -67,6 +67,7 @@ package body Babel.Files.Maps is
    --  ------------------------------
    --  Add the file with the given name in the container.
    --  ------------------------------
+   overriding
    procedure Add_File (Into    : in out Differential_Container;
                        Element : in File_Type) is
       use type ADO.Identifier;
@@ -79,6 +80,7 @@ package body Babel.Files.Maps is
    --  ------------------------------
    --  Add the directory with the given name in the container.
    --  ------------------------------
+   overriding
    procedure Add_Directory (Into    : in out Differential_Container;
                             Element : in Directory_Type) is
       use type ADO.Identifier;
@@ -91,6 +93,7 @@ package body Babel.Files.Maps is
    --  ------------------------------
    --  Create a new file instance with the given name in the container.
    --  ------------------------------
+   overriding
    function Create (Into : in Differential_Container;
                     Name : in String) return File_Type is
    begin
@@ -101,6 +104,7 @@ package body Babel.Files.Maps is
    --  ------------------------------
    --  Create a new directory instance with the given name in the container.
    --  ------------------------------
+   overriding
    function Create (Into : in Differential_Container;
                     Name : in String) return Directory_Type is
    begin
@@ -112,6 +116,7 @@ package body Babel.Files.Maps is
    --  Find the file with the given name in this file container.
    --  Returns NO_FILE if the file was not found.
    --  ------------------------------
+   overriding
    function Find (From : in Differential_Container;
                   Name : in String) return File_Type is
    begin
@@ -122,6 +127,7 @@ package body Babel.Files.Maps is
    --  Find the directory with the given name in this file container.
    --  Returns NO_DIRECTORY if the directory was not found.
    --  ------------------------------
+   overriding
    function Find (From : in Differential_Container;
                   Name : in String) return Directory_Type is
    begin
