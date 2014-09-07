@@ -28,6 +28,20 @@ package body Babel.Files.Maps is
    end Find;
 
    --  ------------------------------
+   --  Find the file with the given name in the file map.
+   --  ------------------------------
+   function Find (From : in File_Map;
+                  Name : in String) return File_Type is
+      Pos : constant File_Cursor := From.Find (Key => Name'Unrestricted_Access);
+   begin
+      if File_Maps.Has_Element (Pos) then
+         return File_Maps.Element (Pos);
+      else
+         return NO_FILE;
+      end if;
+   end Find;
+
+   --  ------------------------------
    --  Add the file with the given name in the container.
    --  ------------------------------
    procedure Add_File (Into    : in out Differential_Container;
