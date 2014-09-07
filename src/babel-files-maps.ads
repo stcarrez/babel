@@ -91,6 +91,13 @@ package Babel.Files.Maps is
    procedure Set_Directory (Into      : in out Differential_Container;
                             Directory : in Directory_Type);
 
+   --  Prepare the differential container by setting up the known files and known
+   --  directories.  The <tt>Update</tt> procedure is called to give access to the
+   --  maps that can be updated.
+   procedure Prepare (Container : in out Differential_Container;
+                      Update    : access procedure (Files : in out File_Map;
+                                                    Dirs  : in out Directory_Map));
+
 private
 
    type Differential_Container is new Babel.Files.Default_Container with record
