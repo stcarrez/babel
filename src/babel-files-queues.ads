@@ -65,4 +65,19 @@ package Babel.Files.Queues is
                             Path : in String;
                             Name : in String);
 
+   type Directory_Queue is limited private;
+
+   --  Returns true if there is a directory in the queue.
+   function Has_Directory (Queue : in Directory_Queue) return Boolean;
+
+   --  Get the next directory from the queue.
+   procedure Peek_Directory (Queue     : in out Directory_Queue;
+                             Directory : out Directory_Type);
+
+private
+
+   type Directory_Queue is limited record
+      Directories : Directory_Vector;
+   end record;
+
 end Babel.Files.Queues;
