@@ -74,6 +74,10 @@ package Babel.Files.Queues is
    procedure Peek_Directory (Queue     : in out Directory_Queue;
                              Directory : out Directory_Type);
 
+   --  Add the directory in the queue.
+   procedure Add_Directory (Queue     : in out Directory_Queue;
+                            Directory : in Directory_Type);
+
 private
 
    type Directory_Queue is limited record
