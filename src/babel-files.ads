@@ -130,6 +130,10 @@ package Babel.Files is
    function Find (From : in File_Container;
                   Name : in String) return Directory_Type is abstract;
 
+   --  Set the directory object associated with the container.
+   procedure Set_Directory (Into      : in out File_Container;
+                            Directory : in Directory_Type) is abstract;
+
    type Default_Container is new File_Container with private;
 
    --  Add the file with the given name in the container.
@@ -165,6 +169,7 @@ package Babel.Files is
                   Name : in String) return Directory_Type;
 
    --  Set the directory object associated with the container.
+   overriding
    procedure Set_Directory (Into      : in out Default_Container;
                             Directory : in Directory_Type);
 
