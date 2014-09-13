@@ -30,6 +30,7 @@ package body Babel.Files is
    --  ------------------------------
    function Allocate (Name : in String;
                       Dir  : in Directory_Type) return File_Type is
+      use Ada.Strings.Unbounded;
       Result : constant File_Type := new File '(Len    => Name'Length,
                                                 Id     => NO_IDENTIFIER,
                                                 Dir    => Dir,
@@ -55,6 +56,8 @@ package body Babel.Files is
       if Dir /= null then
          Result.Path := To_Unbounded_String
            (Util.Files.Compose (To_String (Dir.Path), Name));
+      else
+         Result.Path := To_Unbounded_String (Name);
       end if;
       return Result;
    end Allocate;
@@ -231,5 +234,20 @@ package body Babel.Files is
          Directory_Vectors.Next (Iter);
       end loop;
    end Each_Directory;
+
+   --  ------------------------------
+   --  Execute the Process procedure on each file found in the container.
+   --  ------------------------------
+   overriding
+   procedure Each_File (Container : in Default_Container;
+                        Process   : not null access
+                          procedure (F : in File_Type)) is
+      Iter : File_Vectors.Cursor := Container.Files.First;
+   begin
+      while File_Vectors.Has_Element (Iter) loop
+         Process (File_Vectors.Element (Iter));
+         File_Vectors.Next (Iter);
+      end loop;
+   end Each_File;
 
 end Babel.Files;
