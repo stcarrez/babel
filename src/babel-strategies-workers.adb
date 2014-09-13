@@ -44,7 +44,7 @@ package body Babel.Strategies.Workers is
          begin
             S.Execute;
          exception
-            when Babel.Files.File_Fifo.Timeout =>
+            when Babel.Files.Queues.File_Fifo.Timeout =>
                Log.Info ("Strategy worker stopped on timeout");
                exit;
 
