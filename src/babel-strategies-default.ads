@@ -27,7 +27,8 @@ package Babel.Strategies.Default is
 
    --  Get the next directory that must be processed by the strategy.
    overriding
-   function Peek_Directory (Strategy : in out Default_Strategy_Type) return String;
+   procedure Peek_Directory (Strategy  : in out Default_Strategy_Type;
+                             Directory : out Babel.Files.Directory_Type);
 
    overriding
    procedure Execute (Strategy : in out Default_Strategy_Type);
