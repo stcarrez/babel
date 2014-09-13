@@ -26,6 +26,12 @@ with ADO;
 with Babel.Base.Models;
 package body Babel.Files.Queues is
 
+   procedure Add_File (Into : in out File_Queue;
+                       File : in File_Type) is
+   begin
+      Into.Queue.Enqueue (File);
+   end Add_File;
+
    --  ------------------------------
    --  Returns true if there is a directory in the queue.
    --  ------------------------------
