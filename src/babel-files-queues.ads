@@ -50,20 +50,12 @@ package Babel.Files.Queues is
    --           null;
    --     end Execute;
 
-   type File_Queue is limited new File_Container with record
+   type File_Queue is tagged limited record
       Queue       : File_Fifo.Fifo;
-      Directories : Util.Strings.Vectors.Vector;
    end record;
 
-   overriding
-   procedure Add_File (Into    : in out File_Queue;
-                       Path    : in String;
-                       Element : in File);
-
-   overriding
-   procedure Add_Directory (Into : in out File_Queue;
-                            Path : in String;
-                            Name : in String);
+   procedure Add_File (Into : in out File_Queue;
+                       File : in File_Type);
 
    type Directory_Queue is limited private;
 
