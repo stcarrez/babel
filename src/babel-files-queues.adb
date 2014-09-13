@@ -44,4 +44,13 @@ package body Babel.Files.Queues is
       Queue.Directories.Delete_Last;
    end Peek_Directory;
 
+   --  ------------------------------
+   --  Add the directory in the queue.
+   --  ------------------------------
+   procedure Add_Directory (Queue     : in out Directory_Queue;
+                            Directory : in Directory_Type) is
+   begin
+      Queue.Directories.Append (Directory);
+   end Add_Directory;
+
 end Babel.Files.Queues;
