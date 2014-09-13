@@ -217,4 +217,19 @@ package body Babel.Files is
       Into.Dirs.Clear;
    end Set_Directory;
 
+   --  ------------------------------
+   --  Execute the Process procedure on each directory found in the container.
+   --  ------------------------------
+   overriding
+   procedure Each_Directory (Container : in Default_Container;
+                             Process   : not null access
+                               procedure (Dir : in Directory_Type)) is
+      Iter : Directory_Vectors.Cursor := Container.Dirs.First;
+   begin
+      while Directory_Vectors.Has_Element (Iter) loop
+         Process (Directory_Vectors.Element (Iter));
+         Directory_Vectors.Next (Iter);
+      end loop;
+   end Each_Directory;
+
 end Babel.Files;
