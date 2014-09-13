@@ -134,6 +134,11 @@ package Babel.Files is
    procedure Set_Directory (Into      : in out File_Container;
                             Directory : in Directory_Type) is abstract;
 
+   --  Execute the Process procedure on each directory found in the container.
+   procedure Each_Directory (Container : in File_Container;
+                             Process   : not null access
+                               procedure (Dir : in Directory_Type)) is abstract;
+
    type Default_Container is new File_Container with private;
 
    --  Add the file with the given name in the container.
@@ -172,6 +177,12 @@ package Babel.Files is
    overriding
    procedure Set_Directory (Into      : in out Default_Container;
                             Directory : in Directory_Type);
+
+   --  Execute the Process procedure on each directory found in the container.
+   overriding
+   procedure Each_Directory (Container : in Default_Container;
+                             Process   : not null access
+                               procedure (Dir : in Directory_Type));
 
 private
 
