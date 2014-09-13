@@ -38,7 +38,8 @@ package Babel.Strategies is
    function Has_Directory (Strategy : in Strategy_Type) return Boolean is abstract;
 
    --  Get the next directory that must be processed by the strategy.
-   function Peek_Directory (Strategy : in out Strategy_Type) return String is abstract;
+   procedure Peek_Directory (Strategy  : in out Strategy_Type;
+                             Directory : out Babel.Files.Directory_Type) is abstract;
 
    procedure Scan (Strategy : in out Strategy_Type;
                    Path     : in String);
