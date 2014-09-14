@@ -26,6 +26,27 @@ package body Babel.Files is
    Hex_Encoder : Util.Encoders.Base16.Encoder;
 
    --  ------------------------------
+   --  Compare two files on their name and directory.
+   --  ------------------------------
+   function "<" (Left, Right : in File_Type) return Boolean is
+      use type Ada.Strings.Unbounded.Unbounded_String;
+   begin
+      if Left = NO_FILE then
+         return False;
+      elsif Right = NO_FILE then
+         return True;
+      elsif Left.Dir = Right.Dir then
+         return Left.Name < Right.Name;
+      elsif Left.Dir = NO_DIRECTORY then
+         return True;
+      elsif Right.Dir = NO_DIRECTORY then
+         return False;
+      else
+         return Left.Dir.Path < Right.Dir.Path;
+      end if;
+   end "<";
+
+   --  ------------------------------
    --  Allocate a File_Type entry with the given name for the directory.
    --  ------------------------------
    function Allocate (Name : in String;
