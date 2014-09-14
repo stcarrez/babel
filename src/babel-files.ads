@@ -120,6 +120,9 @@ package Babel.Files is
    --  Return the group gid.
    function Get_Group (Element : in File_Type) return Gid_Type;
 
+   --  Return the file unix mode.
+   function Get_Mode (Element : in File_Type) return File_Mode;
+
    type File_Container is limited interface;
 
    --  Add the file with the given name in the container.
