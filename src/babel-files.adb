@@ -198,6 +198,14 @@ package body Babel.Files is
    end Get_User;
 
    --  ------------------------------
+   --  Return the group gid.
+   --  ------------------------------
+   function Get_Group (Element : in File_Type) return Gid_Type is
+   begin
+      return Element.Group;
+   end Get_Group;
+
+   --  ------------------------------
    --  Add the file with the given name in the container.
    --  ------------------------------
    overriding
