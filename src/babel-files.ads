@@ -111,6 +111,9 @@ package Babel.Files is
    --  Return the file size.
    function Get_Size (Element : in File_Type) return File_Size;
 
+   --  Return the file modification date.
+   function Get_Date (Element : in File_Type) return Ada.Calendar.Time;
+
    type File_Container is limited interface;
 
    --  Add the file with the given name in the container.
