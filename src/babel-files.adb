@@ -182,6 +182,14 @@ package body Babel.Files is
    end Get_Size;
 
    --  ------------------------------
+   --  Return the file modification date.
+   --  ------------------------------
+   function Get_Date (Element : in File_Type) return Ada.Calendar.Time is
+   begin
+      return Element.Date;
+   end Get_Date;
+
+   --  ------------------------------
    --  Add the file with the given name in the container.
    --  ------------------------------
    overriding
