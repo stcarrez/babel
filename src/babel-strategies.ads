@@ -16,6 +16,8 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 
+with Util.Listeners;
+
 with Babel.Files;
 with Babel.Files.Queues;
 with Babel.Files.Buffers;
@@ -81,6 +83,10 @@ package Babel.Strategies is
    procedure Set_Buffers (Strategy : in out Strategy_Type;
                           Buffers  : in Babel.Files.Buffers.Buffer_Pool_Access);
 
+   --  Set the listeners to inform about changes.
+   procedure Set_Listeners (Strategy  : in out Strategy_Type;
+                            Listeners : access Util.Listeners.List);
+
 private
 
    type Strategy_Type is abstract tagged limited record
@@ -88,6 +94,7 @@ private
       Write_Store : Babel.Stores.Store_Type_Access;
       Filters     : Babel.Filters.Filter_Type_Access;
       Buffers     : Babel.Files.Buffers.Buffer_Pool_Access;
+      Listeners   : access Util.Listeners.List;
    end record;
 
 end Babel.Strategies;
