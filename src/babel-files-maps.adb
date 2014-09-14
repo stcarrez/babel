@@ -42,6 +42,15 @@ package body Babel.Files.Maps is
    end Find;
 
    --  ------------------------------
+   --  Insert the file in the file map.
+   --  ------------------------------
+   procedure Insert (Into : in out File_Map;
+                     File : in File_Type) is
+   begin
+      Into.Insert (Key => File.Name'Unrestricted_Access, New_Item => File);
+   end Insert;
+
+   --  ------------------------------
    --  Find the directory with the given name in the directory map.
    --  ------------------------------
    function Find (From : in Directory_Map;
