@@ -140,4 +140,14 @@ package body Babel.Strategies is
       Strategy.Write_Store := Write;
    end Set_Stores;
 
+   --  ------------------------------
+   --  Set the listeners to inform about changes.
+   --  ------------------------------
+   procedure Set_Listeners (Strategy  : in out Strategy_Type;
+                            Listeners : access Util.Listeners.List) is
+   begin
+      Strategy.Listeners := Listeners;
+   end Set_Listeners;
+
+
 end Babel.Strategies;
