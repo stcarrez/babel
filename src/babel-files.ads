@@ -117,6 +117,9 @@ package Babel.Files is
    --  Return the user uid.
    function Get_User (Element : in File_Type) return Uid_Type;
 
+   --  Return the group gid.
+   function Get_Group (Element : in File_Type) return Gid_Type;
+
    type File_Container is limited interface;
 
    --  Add the file with the given name in the container.
