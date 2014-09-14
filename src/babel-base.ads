@@ -18,9 +18,14 @@
 with Ada.Finalization;
 with ADO;
 
+with Babel.Files;
 package Babel.Base is
 
    type Database is abstract new Ada.Finalization.Limited_Controlled with private;
+
+   --  Insert the file in the database.
+   procedure Insert (Into : in out Database;
+                     File : in Babel.Files.File_Type) is abstract;
 
 private
 
