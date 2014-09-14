@@ -206,6 +206,14 @@ package body Babel.Files is
    end Get_Group;
 
    --  ------------------------------
+   --  Return the file unix mode.
+   --  ------------------------------
+   function Get_Mode (Element : in File_Type) return File_Mode is
+   begin
+      return Element.Mode;
+   end Get_Mode;
+
+   --  ------------------------------
    --  Add the file with the given name in the container.
    --  ------------------------------
    overriding
