@@ -33,15 +33,21 @@ package Babel.Strategies.Default is
    overriding
    procedure Execute (Strategy : in out Default_Strategy_Type);
 
+   --  Scan the directory
    overriding
-   procedure Add_File (Into    : in out Default_Strategy_Type;
-                       Path    : in String;
-                       Element : in Babel.Files.File);
+   procedure Scan (Strategy  : in out Default_Strategy_Type;
+                   Directory : in Babel.Files.Directory_Type;
+                   Container : in out Babel.Files.File_Container'Class);
 
-   overriding
-   procedure Add_Directory (Into : in out Default_Strategy_Type;
-                            Path : in String;
-                            Name : in String);
+--     overriding
+--     procedure Add_File (Into    : in out Default_Strategy_Type;
+--                         Path    : in String;
+--                         Element : in Babel.Files.File);
+--
+--     overriding
+--     procedure Add_Directory (Into : in out Default_Strategy_Type;
+--                              Path : in String;
+--                              Name : in String);
 
 private
 
