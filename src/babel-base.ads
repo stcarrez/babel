@@ -22,6 +22,7 @@ with Babel.Files;
 package Babel.Base is
 
    type Database is abstract new Ada.Finalization.Limited_Controlled with private;
+   type Database_Access is access all Database'Class;
 
    --  Insert the file in the database.
    procedure Insert (Into : in out Database;
