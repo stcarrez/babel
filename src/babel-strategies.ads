@@ -16,15 +16,14 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 
-pragma Ada_2012;
-
 with Babel.Files;
+with Babel.Files.Queues;
 with Babel.Files.Buffers;
 with Babel.Stores;
 with Babel.Filters;
 package Babel.Strategies is
 
-   type Strategy_Type is abstract limited new Babel.Files.File_Container with private;
+   type Strategy_Type is abstract tagged limited private;
    type Strategy_Type_Access is access all Strategy_Type'Class;
 
    --  Allocate a buffer to read the file content.
@@ -41,8 +40,16 @@ package Babel.Strategies is
    procedure Peek_Directory (Strategy  : in out Strategy_Type;
                              Directory : out Babel.Files.Directory_Type) is abstract;
 
-   procedure Scan (Strategy : in out Strategy_Type;
-                   Path     : in String);
+   --  Scan the directory
+   procedure Scan (Strategy  : in out Strategy_Type;
+                   Directory : in Babel.Files.Directory_Type;
+                   Container : in out Babel.Files.File_Container'Class);
+
+   --  Scan the directories which are defined in the directory queue and
+   --  use the file container to scan the files and directories.
+   procedure Scan (Strategy  : in out Strategy_Type;
+                   Queue     : in out Babel.Files.Queues.Directory_Queue;
+                   Container : in out Babel.Files.File_Container'Class);
 
    --  Read the file from the read store into the local buffer.
    procedure Read_File (Strategy : in Strategy_Type;
@@ -76,7 +83,7 @@ package Babel.Strategies is
 
 private
 
-   type Strategy_Type is abstract limited new Babel.Files.File_Container with record
+   type Strategy_Type is abstract tagged limited record
       Read_Store  : Babel.Stores.Store_Type_Access;
       Write_Store : Babel.Stores.Store_Type_Access;
       Filters     : Babel.Filters.Filter_Type_Access;
