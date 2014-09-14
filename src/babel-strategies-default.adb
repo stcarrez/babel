@@ -25,16 +25,17 @@ package body Babel.Strategies.Default is
    overriding
    function Has_Directory (Strategy : in Default_Strategy_Type) return Boolean is
    begin
-      return not Strategy.Queue.Directories.Is_Empty;
+      return false; --  not Strategy.Queue.Directories.Is_Empty;
    end Has_Directory;
 
    --  Get the next directory that must be processed by the strategy.
    overriding
-   function Peek_Directory (Strategy : in out Default_Strategy_Type) return String is
-      Last : constant String := Strategy.Queue.Directories.Last_Element;
+   procedure Peek_Directory (Strategy  : in out Default_Strategy_Type;
+                             Directory : out Babel.Files.Directory_Type) is
+      Last : constant String := ""; --  Strategy.Queue.Directories.Last_Element;
    begin
-      Strategy.Queue.Directories.Delete_Last;
-      return Last;
+      --        Strategy.Queue.Directories.Delete_Last;
+      null;
    end Peek_Directory;
 
    overriding
@@ -59,20 +60,36 @@ package body Babel.Strategies.Default is
          raise;
    end Execute;
 
+   --  Scan the directory
    overriding
-   procedure Add_File (Into    : in out Default_Strategy_Type;
-                       Path    : in String;
-                       Element : in Babel.Files.File) is
-   begin
-      Into.Queue.Add_File (Path, Element);
-   end Add_File;
+   procedure Scan (Strategy  : in out Default_Strategy_Type;
+                   Directory : in Babel.Files.Directory_Type;
+                   Container : in out Babel.Files.File_Container'Class) is
 
-   overriding
-   procedure Add_Directory (Into : in out Default_Strategy_Type;
-                            Path : in String;
-                            Name : in String) is
+      procedure Add_Queue (File : in Babel.Files.File_Type) is
+      begin
+         Strategy.Queue.Add_File (File);
+      end Add_Queue;
+
    begin
-      Into.Queue.Add_Directory (Path, Name);
-   end Add_Directory;
+      Strategy_Type (Strategy).Scan (Directory, Container);
+      Container.Each_File (Add_Queue'Access);
+   end Scan;
+
+--     overriding
+--     procedure Add_File (Into    : in out Default_Strategy_Type;
+--                         Path    : in String;
+--                         Element : in Babel.Files.File) is
+--     begin
+--        Into.Queue.Add_File (Path, Element);
+--     end Add_File;
+--
+--     overriding
+--     procedure Add_Directory (Into : in out Default_Strategy_Type;
+--                              Path : in String;
+--                              Name : in String) is
+--     begin
+--        Into.Queue.Add_Directory (Path, Name);
+--     end Add_Directory;
 
 end Babel.Strategies.Default;
