@@ -146,6 +146,17 @@ package body Babel.Files is
    end Set_Size;
 
    --  ------------------------------
+   --  Set the owner and group of the file.
+   --  ------------------------------
+   procedure Set_Owner (Element : in File_Type;
+                        User    : in Uid_Type;
+                        Group   : in Gid_Type) is
+   begin
+      Element.User  := User;
+      Element.Group := Group;
+   end Set_Owner;
+
+   --  ------------------------------
    --  Return the path for the file.
    --  ------------------------------
    function Get_Path (Element : in File_Type) return String is
