@@ -25,6 +25,8 @@ with Util.Log.Loggers;
 with Util.Files;
 with Util.Systems.Os;
 with Util.Streams.Raw;
+with Util.Systems.Types;
+with Util.Systems.Os;
 with Interfaces;
 package body Babel.Stores.Local is
 
@@ -123,11 +125,16 @@ package body Babel.Stores.Local is
       use type Babel.Files.File_Type;
       use type Babel.Files.Directory_Type;
 
+      function Sys_Stat (Path : in System.Address;
+                         Stat : access Util.Systems.Types.Stat_Type) return Integer;
+      pragma Import (C, Sys_Stat, "stat");
+
       Search_Filter : constant Ada.Directories.Filter_Type := (Ordinary_File => True,
                                                                Ada.Directories.Directory => True,
                                                                Special_File => False);
       Search   : Search_Type;
       Ent      : Directory_Entry_Type;
+      Stat     : aliased Util.Systems.Types.Stat_Type;
    begin
       Log.Info ("Scan directory {0}", Path);
 
@@ -135,18 +142,31 @@ package body Babel.Stores.Local is
       while More_Entries (Search) loop
          Get_Next_Entry (Search, Ent);
          declare
+            use Util.Systems.Types;
+            use Interfaces.C;
+            use Babel.Files;
+
             Name : constant String    := Simple_Name (Ent);
             Kind : constant File_Kind := Ada.Directories.Kind (Ent);
             File : Babel.Files.File_Type;
             Dir  : Babel.Files.Directory_Type;
+            Res  : Integer;
+            Fpath : String (1 .. Path'Length + Name'Length + 3);
          begin
-            if Kind = Ordinary_File then
+            Fpath (Path'Range) := Path;
+            Fpath (Path'Last + 1) := '/';
+            Fpath (Path'Last + 2 .. Path'Last + 2 + Name'Length - 1) := Name;
+            Fpath (Path'Last + 2 + Name'Length) := ASCII.NUL;
+            Res := Sys_Stat (Fpath'Address, Stat'Unchecked_Access);
+            if (Stat.st_mode and S_IFMT) = S_IFREG then
                if Filter.Is_Accepted (Kind, Path, Name) then
                   File := Into.Find (Name);
                   if File = Babel.Files.NO_FILE then
                      File := Into.Create (Name);
                   end if;
-                  Babel.Files.Set_Size (File, Get_File_Size (Ent));
+                  Babel.Files.Set_Size (File, Babel.Files.File_Size (Stat.st_size));
+                  Babel.Files.Set_Owner (File, Uid_Type (Stat.st_uid), Gid_Type (Stat.st_gid));
+                  Babel.Files.Set_Date (File, Stat.st_mtim);
                   Into.Add_File (File);
                end if;
             elsif Name /= "." and Name /= ".." and Filter.Is_Accepted (Kind, Path, Name) then
