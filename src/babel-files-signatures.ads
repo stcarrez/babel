@@ -17,10 +17,15 @@
 -----------------------------------------------------------------------
 with Babel.Files;
 with Babel.Files.Buffers;
+with Babel.Files.Maps;
 package Babel.Files.Signatures is
 
    --  Compute the SHA1 signature of the data stored in the buffer.
    procedure Sha1 (Buffer : in Babel.Files.Buffers.Buffer;
                    Result : out Util.Encoders.SHA1.Hash_Array);
+
+   --  Write the SHA1 checksum for the files stored in the map.
+   procedure Save_Checksum (Path  : in String;
+                            Files : in Babel.Files.Maps.File_Map);
 
 end Babel.Files.Signatures;
