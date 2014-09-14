@@ -15,11 +15,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-pragma Ada_2012;
 
 with Util.Log.Loggers;
 with Babel.Files;
 with Babel.Files.Buffers;
+with Babel.Files.Lifecycles;
 with Babel.Stores;
 package body Babel.Strategies is
 
@@ -83,6 +83,11 @@ package body Babel.Strategies is
                           File     : in Babel.Files.File_Type;
                           Content  : in out Babel.Files.Buffers.Buffer_Access) is
    begin
+      if Babel.Files.Is_New (File) then
+         Babel.Files.Lifecycles.Notify_Create (Strategy.Listeners.all, File);
+      else
+         Babel.Files.Lifecycles.Notify_Update (Strategy.Listeners.all, File);
+      end if;
       Print_Sha (File);
       Strategy.Write_File (File, Content);
       Strategy.Release_Buffer (Content);
@@ -148,6 +153,5 @@ package body Babel.Strategies is
    begin
       Strategy.Listeners := Listeners;
    end Set_Listeners;
-
 
 end Babel.Strategies;
