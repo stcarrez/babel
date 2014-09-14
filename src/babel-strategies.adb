@@ -154,4 +154,13 @@ package body Babel.Strategies is
       Strategy.Listeners := Listeners;
    end Set_Listeners;
 
+   --  ------------------------------
+   --  Set the database for use by the strategy.
+   --  ------------------------------
+   procedure Set_Database (Strategy : in out Strategy_Type;
+                           Database : in Babel.Base.Database_Access) is
+   begin
+      Strategy.Database := Database;
+   end Set_Database;
+
 end Babel.Strategies;
