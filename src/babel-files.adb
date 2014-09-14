@@ -99,6 +99,15 @@ package body Babel.Files is
    end Is_Modified;
 
    --  ------------------------------
+   --  Return true if the file is a new file.
+   --  ------------------------------
+   function Is_New (Element : in File_Type) return Boolean is
+      use type ADO.Identifier;
+   begin
+      return Element.Id = NO_IDENTIFIER;
+   end Is_New;
+
+   --  ------------------------------
    --  Set the file as modified.
    --  ------------------------------
    procedure Set_Modified (Element : in File_Type) is
@@ -163,6 +172,14 @@ package body Babel.Files is
    begin
       return Hex_Encoder.Transform (Element.SHA1);
    end Get_SHA1;
+
+   --  ------------------------------
+   --  Return the file size.
+   --  ------------------------------
+   function Get_Size (Element : in File_Type) return File_Size is
+   begin
+      return Element.Size;
+   end Get_Size;
 
    --  ------------------------------
    --  Add the file with the given name in the container.
