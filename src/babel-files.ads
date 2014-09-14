@@ -19,6 +19,7 @@ with Ada.Calendar;
 with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
 
+with Util.Systems.Types;
 with Util.Encoders.SHA1;
 with ADO;
 package Babel.Files is
@@ -103,6 +104,10 @@ package Babel.Files is
    procedure Set_Owner (Element : in File_Type;
                         User    : in Uid_Type;
                         Group   : in Gid_Type);
+
+   --  Set the file modification date.
+   procedure Set_Date (Element : in File_Type;
+                       Date    : in Util.Systems.Types.Timespec);
 
    --  Return the path for the file.
    function Get_Path (Element : in File_Type) return String;
