@@ -15,6 +15,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Ada.Calendar.Conversions;
+with Interfaces.C;
 
 with Util.Log.Loggers;
 with Util.Files;
@@ -155,6 +157,15 @@ package body Babel.Files is
       Element.User  := User;
       Element.Group := Group;
    end Set_Owner;
+
+   --  ------------------------------
+   --  Set the file modification date.
+   --  ------------------------------
+   procedure Set_Date (Element : in File_Type;
+                       Date    : in Util.Systems.Types.Timespec) is
+   begin
+      Element.Date := Ada.Calendar.Conversions.To_Ada_Time (Interfaces.C.long (Date.tv_sec));
+   end Set_Date;
 
    --  ------------------------------
    --  Return the path for the file.
