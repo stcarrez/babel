@@ -190,6 +190,14 @@ package body Babel.Files is
    end Get_Date;
 
    --  ------------------------------
+   --  Return the user uid.
+   --  ------------------------------
+   function Get_User (Element : in File_Type) return Uid_Type is
+   begin
+      return Element.User;
+   end Get_User;
+
+   --  ------------------------------
    --  Add the file with the given name in the container.
    --  ------------------------------
    overriding
