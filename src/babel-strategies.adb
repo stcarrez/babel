@@ -88,16 +88,35 @@ package body Babel.Strategies is
       Strategy.Release_Buffer (Content);
    end Backup_File;
 
-   procedure Scan (Strategy : in out Strategy_Type;
-                   Path     : in String) is
+   --  Scan the directory
+   procedure Scan (Strategy  : in out Strategy_Type;
+                   Directory : in Babel.Files.Directory_Type;
+                   Container : in out Babel.Files.File_Container'Class) is
+      Path : constant String := Babel.Files.Get_Path (Directory);
    begin
-      Strategy.Read_Store.Scan (Path, Strategy, Strategy.Filters.all);
-      while Strategy_Type'Class (Strategy).Has_Directory loop
-         declare
-            Path : constant String := Strategy_Type'Class (Strategy).Peek_Directory;
-         begin
-            Strategy.Read_Store.Scan (Path, Strategy, Strategy.Filters.all);
-         end;
+      Strategy.Read_Store.Scan (Path, Container, Strategy.Filters.all);
+   end Scan;
+
+   --  ------------------------------
+   --  Scan the directories which are defined in the directory queue and
+   --  use the file container to scan the files and directories.
+   --  ------------------------------
+   procedure Scan (Strategy  : in out Strategy_Type;
+                   Queue     : in out Babel.Files.Queues.Directory_Queue;
+                   Container : in out Babel.Files.File_Container'Class) is
+
+      procedure Append_Directory (Directory : in Babel.Files.Directory_Type) is
+      begin
+         Babel.Files.Queues.Add_Directory (Queue, Directory);
+      end Append_Directory;
+
+      Dir : Babel.Files.Directory_Type;
+   begin
+      while Babel.Files.Queues.Has_Directory (Queue) loop
+         Babel.Files.Queues.Peek_Directory (Queue, Dir);
+         Container.Set_Directory (Dir);
+         Strategy_Type'Class (Strategy).Scan (Dir, Container);
+         Container.Each_Directory (Append_Directory'Access);
       end loop;
    end Scan;
 
