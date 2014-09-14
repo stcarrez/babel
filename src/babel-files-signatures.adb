@@ -15,7 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-
+with Ada.Text_IO;
 package body Babel.Files.Signatures is
 
    --  ------------------------------
@@ -28,5 +28,28 @@ package body Babel.Files.Signatures is
       Util.Encoders.SHA1.Update (Ctx, Buffer.Data (Buffer.Data'First .. Buffer.Last));
       Util.Encoders.SHA1.Finish (Ctx, Result);
    end Sha1;
+
+   --  ------------------------------
+   --  Write the SHA1 checksum for the files stored in the map.
+   --  ------------------------------
+   procedure Save_Checksum (Path  : in String;
+                            Files : in Babel.Files.Maps.File_Map) is
+      Checksum : Ada.Text_IO.File_Type;
+
+      procedure Write_Checksum (Position : in Babel.Files.Maps.File_Cursor) is
+         File : constant Babel.Files.File_Type := Babel.Files.Maps.File_Maps.Element (Position);
+         SHA1 : constant String := Babel.Files.Get_SHA1 (File);
+         Path : constant String := Babel.Files.Get_Path (File);
+      begin
+         Ada.Text_IO.Put (Checksum, Path);
+         Ada.Text_IO.Put (Checksum, ": ");
+         Ada.Text_IO.Put_Line (Checksum, SHA1);
+      end Write_Checksum;
+
+   begin
+      Ada.Text_IO.Create (File => Checksum, Name => Path);
+      Files.Iterate (Write_Checksum'Access);
+      Ada.Text_IO.Close (File => Checksum);
+   end Save_Checksum;
 
 end Babel.Files.Signatures;
