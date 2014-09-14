@@ -83,10 +83,13 @@ package body Babel.Strategies is
                           File     : in Babel.Files.File_Type;
                           Content  : in out Babel.Files.Buffers.Buffer_Access) is
    begin
-      if Babel.Files.Is_New (File) then
-         Babel.Files.Lifecycles.Notify_Create (Strategy.Listeners.all, File);
-      else
-         Babel.Files.Lifecycles.Notify_Update (Strategy.Listeners.all, File);
+      Strategy.Database.Insert (File);
+      if Strategy.Listeners /= null then
+         if Babel.Files.Is_New (File) then
+            Babel.Files.Lifecycles.Notify_Create (Strategy.Listeners.all, File);
+         else
+            Babel.Files.Lifecycles.Notify_Update (Strategy.Listeners.all, File);
+         end if;
       end if;
       Print_Sha (File);
       Strategy.Write_File (File, Content);
