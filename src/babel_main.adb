@@ -7,6 +7,7 @@ with Util.Encoders;
 with Util.Encoders.Base16;
 with Babel.Filters;
 with Babel.Files.Buffers;
+with Babel.Files.Queues;
 with Babel.Stores.Local;
 with Babel.Strategies.Default;
 with Babel.Strategies.Workers;
@@ -30,13 +31,18 @@ procedure babel_main is
 --     end Print_Sha;
 
    procedure Do_Backup (Count : in Positive) is
-      Workers : Babel.Strategies.Workers.Worker_Type (Count);
+      Workers   : Babel.Strategies.Workers.Worker_Type (Count);
+      Container : Babel.Files.Default_Container;
+      Queue     : Babel.Files.Queues.Directory_Queue;
    begin
+      Babel.Files.Queues.Add_Directory (Queue, Dir);
       Babel.Strategies.Workers.Start (Workers, Backup'Unchecked_Access);
-      Backup.Scan (".");
+      Backup.Scan (Queue, Container);
    end Do_Backup;
 
 begin
+   Dir := Babel.Files.Allocate (Name => ".",
+                                Dir  => Babel.Files.NO_DIRECTORY);
    Exclude.Add_Exclude (".svn");
    Exclude.Add_Exclude ("obj");
    Babel.Files.Buffers.Create_Pool (Into => Buffers, Count => 10, Size => 1_000_000);
