@@ -23,6 +23,7 @@ with Babel.Files.Queues;
 with Babel.Files.Buffers;
 with Babel.Stores;
 with Babel.Filters;
+with Babel.Base;
 package Babel.Strategies is
 
    type Strategy_Type is abstract tagged limited private;
@@ -87,6 +88,10 @@ package Babel.Strategies is
    procedure Set_Listeners (Strategy  : in out Strategy_Type;
                             Listeners : access Util.Listeners.List);
 
+   --  Set the database for use by the strategy.
+   procedure Set_Database (Strategy : in out Strategy_Type;
+                           Database : in Babel.Base.Database_Access);
+
 private
 
    type Strategy_Type is abstract tagged limited record
@@ -95,6 +100,7 @@ private
       Filters     : Babel.Filters.Filter_Type_Access;
       Buffers     : Babel.Files.Buffers.Buffer_Pool_Access;
       Listeners   : access Util.Listeners.List;
+      Database    : Babel.Base.Database_Access;
    end record;
 
 end Babel.Strategies;
