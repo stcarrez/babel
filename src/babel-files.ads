@@ -81,6 +81,9 @@ package Babel.Files is
    --  Return true if the file was modified and need a backup.
    function Is_Modified (Element : in File_Type) return Boolean;
 
+   --  Return true if the file is a new file.
+   function Is_New (Element : in File_Type) return Boolean;
+
    --  Set the file as modified.
    procedure Set_Modified (Element : in File_Type);
 
@@ -104,6 +107,9 @@ package Babel.Files is
 
    --  Return the SHA1 signature computed for the file.
    function Get_SHA1 (Element : in File_Type) return String;
+
+   --  Return the file size.
+   function Get_Size (Element : in File_Type) return File_Size;
 
    type File_Container is limited interface;
 
