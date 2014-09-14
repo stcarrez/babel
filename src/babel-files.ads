@@ -99,6 +99,11 @@ package Babel.Files is
    procedure Set_Size (Element : in File_Type;
                        Size    : in File_Size);
 
+   --  Set the owner and group of the file.
+   procedure Set_Owner (Element : in File_Type;
+                        User    : in Uid_Type;
+                        Group   : in Gid_Type);
+
    --  Return the path for the file.
    function Get_Path (Element : in File_Type) return String;
 
