@@ -75,6 +75,9 @@ package Babel.Files is
       Name   : aliased String (1 .. Len);
    end record;
 
+   --  Compare two files on their name and directory.
+   function "<" (Left, Right : in File_Type) return Boolean;
+
    --  Return true if the file was modified and need a backup.
    function Is_Modified (Element : in File_Type) return Boolean;
 
