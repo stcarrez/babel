@@ -15,7 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-
+with Babel.Base.Users.Tests;
 package body Babel.Testsuite is
 
    Tests : aliased Util.Tests.Test_Suite;
@@ -23,6 +23,7 @@ package body Babel.Testsuite is
    function Suite return Util.Tests.Access_Test_Suite is
       Ret : constant Util.Tests.Access_Test_Suite := Tests'Access;
    begin
+      Babel.Base.Users.Tests.Add_Tests (Ret);
       return Ret;
    end Suite;
 
