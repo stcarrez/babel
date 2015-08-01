@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  babel -- Backup Application
---  Copyright (C) 2014 Stephane.Carrez
+--  Copyright (C) 2014, 2015 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,5 +15,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Util.Systems.Types;
 package Babel is
+
+   subtype Uid_Type is Util.Systems.Types.uid_t;
+
+   subtype Gid_Type is Util.Systems.Types.gid_t;
+
 end Babel;
