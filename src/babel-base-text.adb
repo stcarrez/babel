@@ -44,8 +44,8 @@ package body Babel.Base.Text is
          Path : constant String := Babel.Files.Get_Path (File);
       begin
          Ada.Text_IO.Put (Checksum, SHA1);
-         Ada.Text_IO.Put (Checksum, Babel.Files.Uid_Type'Image (Babel.Files.Get_User (File)));
-         Ada.Text_IO.Put (Checksum, Babel.Files.Gid_Type'Image (Babel.Files.Get_Group (File)));
+         Ada.Text_IO.Put (Checksum, Babel.Uid_Type'Image (Babel.Files.Get_User (File)));
+         Ada.Text_IO.Put (Checksum, Babel.Gid_Type'Image (Babel.Files.Get_Group (File)));
          Ada.Text_IO.Put (Checksum, " ");
          Ada.Text_IO.Put (Checksum, Util.Dates.ISO8601.Image (Babel.Files.Get_Date (File)));
          Ada.Text_IO.Put (Checksum, Babel.Files.File_Size'Image (Babel.Files.Get_Size (File)));
