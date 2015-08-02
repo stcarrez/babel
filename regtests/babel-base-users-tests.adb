@@ -31,6 +31,8 @@ package body Babel.Base.Users.Tests is
                        Test_Find'Access);
       Caller.Add_Test (Suite, "Test Babel.Base.Users.Get_Name",
                        Test_Get_Name'Access);
+      Caller.Add_Test (Suite, "Test Babel.Base.Users.Get_Uid",
+                       Test_Get_Uid'Access);
    end Add_Tests;
 
    --  ------------------------------
@@ -72,5 +74,22 @@ package body Babel.Base.Users.Tests is
       Name := Db.Get_Name (55555);
       T.Assert (Name = null, "Get_Name (55555) returned a non null name");
    end Test_Get_Name;
+
+   --  ------------------------------
+   --  Test the Get_Uid operation.
+   --  ------------------------------
+   procedure Test_Get_Uid (T : in out Test) is
+      Db  : Database;
+      Uid : Uid_Type;
+   begin
+      Uid := Db.Get_Uid ("root");
+      Util.Tests.Assert_Equals (T, 0, Natural (Uid), "Get_Uid (root) returned invalid uid");
+
+      Uid := Db.Get_Uid ("admin");
+      T.Assert (Uid /= 0, "Get_Uid (admin) returned invalid uid");
+
+      Uid := Db.Get_Uid ("Katniss");
+      T.Assert (Uid /= 0, "Get_Uid (Katniss) returned invalid uid");
+   end Test_Get_Uid;
 
 end Babel.Base.Users.Tests;
