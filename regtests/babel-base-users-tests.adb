@@ -19,6 +19,8 @@ with Util.Test_Caller;
 
 package body Babel.Base.Users.Tests is
 
+   use type Babel.Uid_Type;
+   use type Babel.Gid_Type;
    use type Util.Strings.Name_Access;
 
    package Caller is new Util.Test_Caller (Test, "Base.Users");
@@ -27,6 +29,8 @@ package body Babel.Base.Users.Tests is
    begin
       Caller.Add_Test (Suite, "Test Babel.Base.Users.Find",
                        Test_Find'Access);
+      Caller.Add_Test (Suite, "Test Babel.Base.Users.Get_Name",
+                       Test_Get_Name'Access);
    end Add_Tests;
 
    --  ------------------------------
@@ -50,5 +54,23 @@ package body Babel.Base.Users.Tests is
       T.Assert (User.Uid > 0, "Invalid 'bin' uid");
       T.Assert (User.Gid > 0, "Invalid 'daemon' gid");
    end Test_Find;
+
+   --  ------------------------------
+   --  Test the Get_Name operation.
+   --  ------------------------------
+   procedure Test_Get_Name (T : in out Test) is
+      Name : Name_Access;
+      Db   : Database;
+   begin
+      Name := Db.Get_Name (0);
+      T.Assert (Name /= null, "Get_Name (0) returned null");
+      Util.Tests.Assert_Equals (T, "root", Name.all, "Invalid name returned for Get_Name (0)");
+
+      Name := Db.Get_Name (1);
+      T.Assert (Name /= null, "Get_Name (1) returned null");
+
+      Name := Db.Get_Name (55555);
+      T.Assert (Name = null, "Get_Name (55555) returned a non null name");
+   end Test_Get_Name;
 
 end Babel.Base.Users.Tests;
