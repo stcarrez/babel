@@ -41,6 +41,14 @@ package body Babel.Base.Users.Tests is
       T.Assert (User.Group /= null, "User gid=0 was not found");
       Util.Tests.Assert_Equals (T, "root", User.Name.all, "Invalid root user name");
       Util.Tests.Assert_Equals (T, "root", User.Group.all, "Invalid root group name");
+
+      User := Db.Find ("bin", "daemon");
+      T.Assert (User.Name /= null, "User bin was not found");
+      T.Assert (User.Group /= null, "Group daemon was not found");
+      Util.Tests.Assert_Equals (T, "bin", User.Name.all, "Invalid 'bin' user name");
+      Util.Tests.Assert_Equals (T, "daemon", User.Group.all, "Invalid 'daemon' group name");
+      T.Assert (User.Uid > 0, "Invalid 'bin' uid");
+      T.Assert (User.Gid > 0, "Invalid 'daemon' gid");
    end Test_Find;
 
 end Babel.Base.Users.Tests;
