@@ -27,4 +27,7 @@ package Babel.Base.Users.Tests is
    --  Test the Find function resolving some existing user.
    procedure Test_Find (T : in out Test);
 
+   --  Test the Get_Name operation.
+   procedure Test_Get_Name (T : in out Test);
+
 end Babel.Base.Users.Tests;
