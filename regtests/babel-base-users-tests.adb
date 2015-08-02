@@ -33,6 +33,8 @@ package body Babel.Base.Users.Tests is
                        Test_Get_Name'Access);
       Caller.Add_Test (Suite, "Test Babel.Base.Users.Get_Uid",
                        Test_Get_Uid'Access);
+      Caller.Add_Test (Suite, "Test Babel.Base.Users.Get_Group",
+                       Test_Get_Group'Access);
    end Add_Tests;
 
    --  ------------------------------
@@ -91,5 +93,23 @@ package body Babel.Base.Users.Tests is
       Uid := Db.Get_Uid ("Katniss");
       T.Assert (Uid /= 0, "Get_Uid (Katniss) returned invalid uid");
    end Test_Get_Uid;
+
+   --  ------------------------------
+   --  Test the Get_Group operation.
+   --  ------------------------------
+   procedure Test_Get_Group (T : in out Test) is
+     Name : Name_Access;
+      Db   : Database;
+   begin
+      Name := Db.Get_Group (0);
+      T.Assert (Name /= null, "Get_Group (0) returned null");
+      Util.Tests.Assert_Equals (T, "root", Name.all, "Invalid name returned for Get_Group (0)");
+
+      Name := Db.Get_Group (1);
+      T.Assert (Name /= null, "Get_Group (1) returned null");
+
+      Name := Db.Get_Group (55555);
+      T.Assert (Name = null, "Get_Group (55555) returned a non null name");
+   end Test_Get_Group;
 
 end Babel.Base.Users.Tests;
