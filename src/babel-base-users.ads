@@ -45,12 +45,12 @@ package Babel.Base.Users is
 
    --  Find the UID and GID for the user that corresponds to the given name and group.
    function Find (From  : in Database;
-                  Name  : in String;
+                  User  : in String;
                   Group : in String) return User_Type;
 
    --  Find the UID and GID for the user that corresponds to the given name and group.
    function Find (From  : in Database;
-                  Name  : in Uid_Type;
+                  User  : in Uid_Type;
                   Group : in Gid_Type) return User_Type;
 
    --  Get the user name associated with the given UID.
@@ -111,7 +111,8 @@ private
       --  If the name was not found in the map, call the <tt>Search</tt> function to resolve it.
       procedure Find_Id (Name   : in String;
                          Search : not null access function (Name : in String) return Natural;
-                         Id     : out Natural);
+                         Id     : out Natural;
+                         Result : out Name_Access);
 
       procedure Clear;
 
