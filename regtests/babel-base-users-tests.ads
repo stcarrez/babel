@@ -33,4 +33,7 @@ package Babel.Base.Users.Tests is
    --  Test the Get_Uid operation.
    procedure Test_Get_Uid (T : in out Test);
 
+   --  Test the Get_Group operation.
+   procedure Test_Get_Group (T : in out Test);
+
 end Babel.Base.Users.Tests;
