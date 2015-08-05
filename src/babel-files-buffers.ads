@@ -21,16 +21,21 @@ with Ada.Containers.Vectors;
 with Util.Concurrent.Pools;
 package Babel.Files.Buffers is
 
-   type Buffer (Max_Size : Ada.Streams.Stream_Element_Offset) is record
-      Last   : Ada.Streams.Stream_Element_Offset;
-      Data   : Ada.Streams.Stream_Element_Array (0 .. Max_Size);
-   end record;
-
+   type Buffer;
    type Buffer_Access is access all Buffer;
 
    package Buffer_Pools is new Util.Concurrent.Pools (Element_Type => Buffer_Access);
 
    type Buffer_Pool_Access is access all Buffer_Pools.Pool;
+
+   type Buffer (Max_Size : Ada.Streams.Stream_Element_Offset;
+                Pool     : Buffer_Pool_Access) is limited record
+      Last   : Ada.Streams.Stream_Element_Offset;
+      Data   : Ada.Streams.Stream_Element_Array (0 .. Max_Size);
+   end record;
+
+   --  Restore the buffer back to the owning pool.
+   procedure Release (Buffer : in out Buffer_Access);
 
    --  Create the buffer pool with a number of pre-allocated buffers of the given maximum size.
    procedure Create_Pool (Into  : in out Buffer_Pools.Pool;
