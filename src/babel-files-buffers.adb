@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  babel-files-buffers -- File buffer management
---  Copyright (C) 2014 Stephane.Carrez
+--  Copyright (C) 2014, 2015 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,15 @@
 package body Babel.Files.Buffers is
 
    --  ------------------------------
+   --  Restore the buffer back to the owning pool.
+   --  ------------------------------
+   procedure Release (Buffer : in out Buffer_Access) is
+   begin
+      Buffer.Pool.Release (Buffer);
+      Buffer := null;
+   end Release;
+
+   --  ------------------------------
    --  Create the buffer pool with a number of pre-allocated buffers of the given maximum size.
    --  ------------------------------
    procedure Create_Pool (Into  : in out Buffer_Pools.Pool;
@@ -27,7 +36,8 @@ package body Babel.Files.Buffers is
    begin
       Into.Set_Size (Count);
       for I in 1 .. Count loop
-         Into.Release (new Buffer (Max_Size => Ada.Streams.Stream_Element_Offset (Size)));
+         Into.Release (new Buffer (Max_Size => Ada.Streams.Stream_Element_Offset (Size),
+                                   Pool     => Into'Unchecked_Access));
       end loop;
    end Create_Pool;
 
