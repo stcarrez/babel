@@ -54,8 +54,11 @@ package Babel.Streams.XZ is
 private
 
    type Stream_Type is new Babel.Streams.Stream_Type with record
-      Context : Lzma.Base.lzma_stream := Lzma.Base.LZMA_STREAM_INIT;
+      Input   : Babel.Streams.Stream_Access;
+      Output  : Babel.Streams.Stream_Access;
+      Context : aliased Lzma.Base.lzma_stream := Lzma.Base.LZMA_STREAM_INIT;
       Action  : Lzma.Base.lzma_action := Lzma.Base.LZMA_RUN;
+      Buffer  : Babel.Files.Buffers.Buffer_Access;
    end record;
 
 end Babel.Streams.XZ;
