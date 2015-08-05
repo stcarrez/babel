@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 
 with Ada.Streams;
+with Ada.Containers.Vectors;
 with Util.Concurrent.Pools;
 package Babel.Files.Buffers is
 
@@ -35,5 +36,12 @@ package Babel.Files.Buffers is
    procedure Create_Pool (Into  : in out Buffer_Pools.Pool;
                           Size  : in Positive;
                           Count : in Positive);
+
+   package Buffer_Access_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                                Element_Type => Buffer_Access,
+                                                                "="          => "=");
+
+   subtype Buffer_Access_Vector is Buffer_Access_Vectors.Vector;
+   subtype Buffer_Access_Cursor is Buffer_Access_Vectors.Cursor;
 
 end Babel.Files.Buffers;
