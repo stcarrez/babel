@@ -40,7 +40,7 @@ AC_SUBST(UTIL_DIR)
 ##########################################
 AM_GNAT_FIND_PROJECT([ada-el],[Ada Expression Language Library],[el],
   [git@github.com:stcarrez/ada-el.git],
-  [Building Ada Server Faces requires the Ada EL Library.],
+  [Building Babel requires the Ada EL Library.],
   [
     EL_DIR=${gnat_project_dir_el}
   ])
@@ -51,11 +51,22 @@ AC_SUBST(EL_DIR)
 ##########################################
 AM_GNAT_FIND_PROJECT([ada-ado],[Ada Database Objects],[ado],
   [git@github.com:stcarrez/ada-ado.git],
-  [Building Dynamo requires the Ada Database Objects Library.],
+  [Building Babel requires the Ada Database Objects Library.],
   [
     ADO_DIR=${gnat_project_dir_ado}
   ])
 AC_SUBST(ADO_DIR)
+
+##########################################
+# Ada LZMA library
+##########################################
+AM_GNAT_FIND_PROJECT([ada-lzma],[Ada LZMA Library Binding],[lzma],
+  [git@github.com:stcarrez/ada-lzma.git],
+  [Building Babel requires the Ada LZMA Library Binding.],
+  [
+    LZMA_DIR=${gnat_project_dir_lzma}
+  ])
+AC_SUBST(LZMA_DIR)
 
 AC_OUTPUT(
 Makefile babel.gpr samples.gpr babel_tests.gpr rules.mk
