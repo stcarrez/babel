@@ -3,6 +3,7 @@ with "@UTIL_DIR@util";
 with "@EL_DIR@el";
 with "@ADO_DIR@ado";
 with "@ADO_DIR@ado_sqlite";
+with "@LZMA_DIR@lzma";
 
 project Babel is
 
