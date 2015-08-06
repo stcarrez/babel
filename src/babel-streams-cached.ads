@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  babel-Streams-cached -- Cached stream management
+--  babel-streams-cached -- Cached stream management
 --  Copyright (C) 2014, 2015 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
 --
@@ -24,6 +24,12 @@ package Babel.Streams.Cached is
    type Stream_Type is new Babel.Streams.Stream_Type with private;
    type Stream_Access is access all Stream_Type'Class;
 
+   --  Load the file stream into the cache and use the buffer pool to obtain more buffers
+   --  for the cache.
+   procedure Load (Stream : in out Stream_Type;
+                   File   : in out Babel.Streams.Stream_Type'Class;
+                   Pool   : in out Babel.Files.Buffers.Buffer_Pool);
+
    --  Read the data stream as much as possible and return the result in a buffer.
    --  The buffer is owned by the stream and need not be released.  The same buffer may
    --  or may not be returned by the next <tt>Read</tt> operation.
@@ -37,14 +43,6 @@ package Babel.Streams.Cached is
    procedure Write (Stream : in out Stream_Type;
                     Buffer : in Babel.Files.Buffers.Buffer_Access);
 
-   --  Flush the data stream.
-   overriding
-   procedure Flush (Stream : in out Stream_Type);
-
-   --  Close the data stream.
-   overriding
-   procedure Close (Stream : in out Stream_Type);
-
    --  Prepare to read again the data stream from the beginning.
    overriding
    procedure Rewind (Stream : in out Stream_Type);
@@ -57,5 +55,9 @@ private
       Buffers : Babel.Files.Buffers.Buffer_Access_Vector;
       Current : Babel.Files.Buffers.Buffer_Access_Cursor;
    end record;
+
+   --  Release the buffers associated with the cache.
+   overriding
+   procedure Finalize (Stream : in out Stream_Type);
 
 end Babel.Streams.Cached;
