@@ -26,6 +26,14 @@ package Babel.Streams.XZ is
    type Stream_Type is new Babel.Streams.Stream_Type with private;
    type Stream_Access is access all Stream_Type'Class;
 
+   --  Set the input stream to decompress.
+   procedure Set_Input (Stream : in out Stream_Type;
+                        Input  : in Babel.Streams.Stream_Access);
+
+   --  Set the output stream to write the compressed stream.
+   procedure Set_Output (Stream : in out Stream_Type;
+                         Output : in Babel.Streams.Stream_Access);
+
    --  Read the data stream as much as possible and return the result in a buffer.
    --  The buffer is owned by the stream and need not be released.  The same buffer may
    --  or may not be returned by the next <tt>Read</tt> operation.
@@ -50,6 +58,11 @@ package Babel.Streams.XZ is
    --  Prepare to read again the data stream from the beginning.
    overriding
    procedure Rewind (Stream : in out Stream_Type);
+
+   --  Set the internal buffer that the stream can use.
+   overriding
+   procedure Set_Buffer (Stream : in out Stream_Type;
+                         Buffer : in Babel.Files.Buffers.Buffer_Access);
 
 private
 
