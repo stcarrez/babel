@@ -43,6 +43,10 @@ package Babel.Streams is
    --  Prepare to read again the data stream from the beginning.
    procedure Rewind (Stream : in out Stream_Type) is null;
 
+   --  Set the internal buffer that the stream can use.
+   procedure Set_Buffer (Stream : in out Stream_Type;
+                         Buffer : in Babel.Files.Buffers.Buffer_Access) is null;
+
 private
 
    type Stream_Type is abstract limited new Ada.Finalization.Limited_Controlled with null record;
