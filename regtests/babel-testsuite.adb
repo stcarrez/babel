@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Babel.Base.Users.Tests;
+with Babel.Streams.Tests;
 package body Babel.Testsuite is
 
    Tests : aliased Util.Tests.Test_Suite;
@@ -24,6 +25,7 @@ package body Babel.Testsuite is
       Ret : constant Util.Tests.Access_Test_Suite := Tests'Access;
    begin
       Babel.Base.Users.Tests.Add_Tests (Ret);
+      Babel.Streams.Tests.Add_Tests (Ret);
       return Ret;
    end Suite;
 
