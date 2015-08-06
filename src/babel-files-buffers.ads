@@ -26,7 +26,9 @@ package Babel.Files.Buffers is
 
    package Buffer_Pools is new Util.Concurrent.Pools (Element_Type => Buffer_Access);
 
-   type Buffer_Pool_Access is access all Buffer_Pools.Pool;
+   subtype Buffer_Pool is Buffer_Pools.Pool;
+
+   type Buffer_Pool_Access is access all Buffer_Pool;
 
    type Buffer (Max_Size : Ada.Streams.Stream_Element_Offset;
                 Pool     : Buffer_Pool_Access) is limited record
