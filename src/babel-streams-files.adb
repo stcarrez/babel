@@ -1,0 +1,116 @@
+-----------------------------------------------------------------------
+--  babel-streams-files -- Local file stream management
+--  Copyright (C) 2014, 2015 Stephane.Carrez
+--  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
+--
+--  Licensed under the Apache License, Version 2.0 (the "License");
+--  you may not use this file except in compliance with the License.
+--  You may obtain a copy of the License at
+--
+--      http://www.apache.org/licenses/LICENSE-2.0
+--
+--  Unless required by applicable law or agreed to in writing, software
+--  distributed under the License is distributed on an "AS IS" BASIS,
+--  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--  See the License for the specific language governing permissions and
+--  limitations under the License.
+-----------------------------------------------------------------------
+with Interfaces.C.Strings;
+
+with Ada.Streams;
+
+with Util.Systems.Os;
+with Util.Systems.Constants;
+package body Babel.Streams.Files is
+
+   use type Interfaces.C.int;
+
+   --  ------------------------------
+   --  Open the local file for reading and use the given buffer for the Read operation.
+   --  ------------------------------
+   procedure Open (Stream : in out Stream_Type;
+                   Path   : in String;
+                   Buffer : in Babel.Files.Buffers.Buffer_Access) is
+      Name : Interfaces.C.Strings.chars_ptr := Interfaces.C.Strings.New_String (Path);
+      Fd   : Util.Systems.Os.File_Type;
+   begin
+      Fd := Util.Systems.Os.Sys_Open (Path  => Name,
+                                      Flags => Util.Systems.Constants.O_RDONLY,
+                                      Mode  => 0);
+      Interfaces.C.Strings.Free (Name);
+      Stream.Buffer := Buffer;
+      Stream.File.Initialize (File => Fd);
+   end Open;
+
+   --  ------------------------------
+   --  Create a file and prepare for the Write operation.
+   --  ------------------------------
+   procedure Create (Stream : in out Stream_Type;
+                     Path   : in String;
+                     Mode   : in Util.Systems.Types.mode_t) is
+      Name : Interfaces.C.Strings.chars_ptr := Interfaces.C.Strings.New_String (Path);
+      Fd   : Util.Systems.Os.File_Type;
+   begin
+      Fd := Util.Systems.Os.Sys_Open (Path  => Name,
+                                      Flags => Util.Systems.Constants.O_WRONLY
+                                      + Util.Systems.Constants.O_CREAT
+                                      + Util.Systems.Constants.O_TRUNC,
+                                      Mode  => Interfaces.C.int (Mode));
+      Interfaces.C.Strings.Free (Name);
+      Stream.Buffer := null;
+      Stream.File.Initialize (File => Fd);
+    end Create;
+
+   --  ------------------------------
+   --  Read the data stream as much as possible and return the result in a buffer.
+   --  The buffer is owned by the stream and need not be released.  The same buffer may
+   --  or may not be returned by the next <tt>Read</tt> operation.
+   --  A null buffer is returned when the end of the data stream is reached.
+   --  ------------------------------
+   overriding
+   procedure Read (Stream : in out Stream_Type;
+                   Buffer : out Babel.Files.Buffers.Buffer_Access) is
+      use type Ada.Streams.Stream_Element_Offset;
+   begin
+      if Stream.Eof then
+         Buffer := null;
+      else
+         Stream.File.Read (Stream.Buffer.Data, Stream.Buffer.Last);
+         if Stream.Buffer.Last < Stream.Buffer.Data'First then
+            Buffer := null;
+         else
+            Buffer := Stream.Buffer;
+         end if;
+         Stream.Eof := Stream.Buffer.Last < Stream.Buffer.Data'Last;
+      end if;
+   end Read;
+
+   --  ------------------------------
+   --  Write the buffer in the data stream.
+   --  ------------------------------
+   overriding
+   procedure Write (Stream : in out Stream_Type;
+                    Buffer : in Babel.Files.Buffers.Buffer_Access) is
+   begin
+      Stream.File.Write (Buffer.Data (Buffer.Data'First .. Buffer.Last));
+   end Write;
+
+   --  ------------------------------
+   --  Close the data stream.
+   --  ------------------------------
+   overriding
+   procedure Close (Stream : in out Stream_Type) is
+   begin
+      Stream.File.Close;
+   end Close;
+
+   --  ------------------------------
+   --  Prepare to read again the data stream from the beginning.
+   --  ------------------------------
+   overriding
+   procedure Rewind (Stream : in out Stream_Type) is
+   begin
+      null;
+   end Rewind;
+
+end Babel.Streams.Files;
