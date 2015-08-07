@@ -31,7 +31,7 @@ package body Babel.Strategies is
    function Allocate_Buffer (Strategy : in Strategy_Type) return Babel.Files.Buffers.Buffer_Access is
       Result : Babel.Files.Buffers.Buffer_Access;
    begin
-      Strategy.Buffers.Get_Instance (Result);
+      Strategy.Buffers.Get_Buffer (Result);
       return Result;
    end Allocate_Buffer;
 
@@ -41,7 +41,7 @@ package body Babel.Strategies is
    procedure Release_Buffer (Strategy : in Strategy_Type;
                              Buffer   : in out Babel.Files.Buffers.Buffer_Access) is
    begin
-      Strategy.Buffers.Release (Buffer);
+      Babel.Files.Buffers.Release (Buffer);
       Buffer := null;
    end Release_Buffer;
 
@@ -72,12 +72,6 @@ package body Babel.Strategies is
       Strategy.Write_Store.Write (Path, Content.all);
    end Write_File;
 
-   procedure Print_Sha (File : in Babel.Files.File_Type) is
-      Sha : constant String := Babel.Files.Get_SHA1 (File);
-   begin
-      Log.Info (Babel.Files.Get_Path (File) & " => " & Sha);
-   end Print_Sha;
-
    --  Backup the file from the local buffer into the write store.
    procedure Backup_File (Strategy : in Strategy_Type;
                           File     : in Babel.Files.File_Type;
@@ -91,7 +85,6 @@ package body Babel.Strategies is
             Babel.Files.Lifecycles.Notify_Update (Strategy.Listeners.all, File);
          end if;
       end if;
-      Print_Sha (File);
       Strategy.Write_File (File, Content);
       Strategy.Release_Buffer (Content);
    end Backup_File;
