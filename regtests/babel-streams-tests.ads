@@ -27,4 +27,11 @@ package Babel.Streams.Tests is
    --  Test the Find function resolving some existing user.
    procedure Test_Stream_Composition (T : in out Test);
 
+   --  Stream copy, compression and decompression test.
+   --  Create a compressed version of the source file and then decompress the result.
+   --  The source file is then compared to the decompressed result and must match.
+   procedure Do_Copy (T    : in out Test;
+                      Pool : in out Babel.Files.Buffers.Buffer_Pool;
+                      Src  : in String);
+
 end Babel.Streams.Tests;
