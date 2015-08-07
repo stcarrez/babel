@@ -59,11 +59,6 @@ package Babel.Streams.XZ is
    overriding
    procedure Rewind (Stream : in out Stream_Type);
 
-   --  Set the internal buffer that the stream can use.
-   overriding
-   procedure Set_Buffer (Stream : in out Stream_Type;
-                         Buffer : in Babel.Files.Buffers.Buffer_Access);
-
 private
 
    type Stream_Type is new Babel.Streams.Stream_Type with record
@@ -71,7 +66,10 @@ private
       Output  : Babel.Streams.Stream_Access;
       Context : aliased Lzma.Base.lzma_stream := Lzma.Base.LZMA_STREAM_INIT;
       Action  : Lzma.Base.lzma_action := Lzma.Base.LZMA_RUN;
-      Buffer  : Babel.Files.Buffers.Buffer_Access;
    end record;
+
+   --  Release the stream buffer and the LZMA stream.
+   overriding
+   procedure Finalize (Stream : in out Stream_Type);
 
 end Babel.Streams.XZ;
