@@ -5,12 +5,20 @@ with Ada.Directories;
 with Ada.Strings.Unbounded;
 with Util.Encoders;
 with Util.Encoders.Base16;
+with Util.Log.Loggers;
 with Babel.Filters;
 with Babel.Files.Buffers;
 with Babel.Files.Queues;
 with Babel.Stores.Local;
 with Babel.Strategies.Default;
 with Babel.Strategies.Workers;
+with Babel.Base.Text;
+with Babel.Base.Users;
+with Babel.Streams;
+with Babel.Streams.XZ;
+with Babel.Streams.Cached;
+with Babel.Streams.Files;
+with Tar;
 procedure babel_main is
 
    use Ada.Strings.Unbounded;
@@ -20,9 +28,11 @@ procedure babel_main is
    Exclude     : aliased Babel.Filters.Exclude_Directory_Filter_Type;
    Local       : aliased Babel.Stores.Local.Local_Store_Type;
    Backup      : aliased Babel.Strategies.Default.Default_Strategy_Type;
-   Buffers     : aliased Babel.Files.Buffers.Buffer_Pools.Pool;
+   Buffers     : aliased Babel.Files.Buffers.Buffer_Pool;
    Store       : aliased Babel.Stores.Local.Local_Store_Type;
---
+   Database    : aliased Babel.Base.Text.Text_Database;
+
+   --
 --     procedure Print_Sha (Path : in String;
 --                          File : in out Babel.Files.File) is
 --        Sha : constant String := Hex_Encoder.Transform (File.SHA1);
@@ -41,6 +51,8 @@ procedure babel_main is
    end Do_Backup;
 
 begin
+   Util.Log.Loggers.Initialize ("babel.properties");
+
    Dir := Babel.Files.Allocate (Name => ".",
                                 Dir  => Babel.Files.NO_DIRECTORY);
    Exclude.Add_Exclude (".svn");
@@ -51,9 +63,11 @@ begin
    Backup.Set_Filters (Exclude'Unchecked_Access);
    Backup.Set_Stores (Read => Local'Unchecked_Access, Write => Store'Unchecked_Access);
    Backup.Set_Buffers (Buffers'Unchecked_Access);
+   Backup.Set_Database (Database'Unchecked_Access);
 
    Put_Line ("Size: " & Natural'Image (Ada.Directories.File_Size'Size));
    Do_Backup (2);
+   Database.Save ("database.txt");
 --     Bkp.Files.Scan (".", Dir);
 --     Bkp.Files.Iterate_Files (".", Dir, 10, Print_Sha'Access);
 --     Put_Line ("Total size: " & Ada.Directories.File_Size'Image (Dir.Tot_Size));
