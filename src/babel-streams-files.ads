@@ -57,16 +57,10 @@ package Babel.Streams.Files is
    overriding
    procedure Rewind (Stream : in out Stream_Type);
 
-   --  Set the internal buffer that the stream can use.
-   overriding
-   procedure Set_Buffer (Stream : in out Stream_Type;
-                         Buffer : in Babel.Files.Buffers.Buffer_Access);
-
 private
 
    type Stream_Type is new Babel.Streams.Stream_Type with record
       File    : Util.Streams.Raw.Raw_Stream;
-      Buffer  : Babel.Files.Buffers.Buffer_Access;
       Eof     : Boolean := False;
    end record;
 
