@@ -15,8 +15,17 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-
+with Ada.Unchecked_Deallocation;
 package body Babel.Files.Buffers is
+
+   --  ------------------------------
+   --  Allocate a buffer from the pool.
+   --  ------------------------------
+   procedure Get_Buffer (Pool   : in out Buffer_Pool;
+                         Buffer : out Buffer_Access) is
+   begin
+      Pool.Pool.Get_Instance (Buffer);
+   end Get_Buffer;
 
    --  ------------------------------
    --  Restore the buffer back to the owning pool.
@@ -30,15 +39,34 @@ package body Babel.Files.Buffers is
    --  ------------------------------
    --  Create the buffer pool with a number of pre-allocated buffers of the given maximum size.
    --  ------------------------------
-   procedure Create_Pool (Into  : in out Buffer_Pools.Pool;
+   procedure Create_Pool (Into  : in out Buffer_Pool;
                           Size  : in Positive;
                           Count : in Positive) is
    begin
-      Into.Set_Size (Count);
+      Into.Pool.Set_Size (Count);
       for I in 1 .. Count loop
-         Into.Release (new Buffer (Max_Size => Ada.Streams.Stream_Element_Offset (Size),
-                                   Pool     => Into'Unchecked_Access));
+         Into.Pool.Release (new Buffer (Max_Size => Ada.Streams.Stream_Element_Offset (Size),
+                                        Pool     => Into.Pool'Unchecked_Access));
       end loop;
    end Create_Pool;
+
+   --  ------------------------------
+   --  Release the buffers allocated for the pool.
+   --  ------------------------------
+   overriding
+   procedure Finalize (Pool : in out Buffer_Pool) is
+      procedure Free is
+        new Ada.Unchecked_Deallocation (Object => Buffer,
+                                        Name   => Buffer_Access);
+      Available : Natural;
+      Buffer    : Buffer_Access;
+   begin
+      loop
+         Pool.Pool.Get_Available (Available);
+         exit when Available = 0;
+         Pool.Pool.Get_Instance (Buffer);
+         Free (Buffer);
+      end loop;
+   end Finalize;
 
 end Babel.Files.Buffers;
