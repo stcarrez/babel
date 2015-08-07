@@ -45,10 +45,16 @@ package Babel.Streams is
 
    --  Set the internal buffer that the stream can use.
    procedure Set_Buffer (Stream : in out Stream_Type;
-                         Buffer : in Babel.Files.Buffers.Buffer_Access) is null;
+                         Buffer : in Babel.Files.Buffers.Buffer_Access);
 
 private
 
-   type Stream_Type is abstract limited new Ada.Finalization.Limited_Controlled with null record;
+   type Stream_Type is abstract limited new Ada.Finalization.Limited_Controlled with record
+      Buffer  : Babel.Files.Buffers.Buffer_Access;
+   end record;
+
+   --  Release the stream buffer if there is one.
+   overriding
+   procedure Finalize (Stream : in out Stream_Type);
 
 end Babel.Streams;
