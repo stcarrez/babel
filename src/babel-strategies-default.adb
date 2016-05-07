@@ -40,18 +40,24 @@ package body Babel.Strategies.Default is
 
    overriding
    procedure Execute (Strategy : in out Default_Strategy_Type) is
+      use type Babel.Files.File_Type;
+
       Content : Babel.Files.Buffers.Buffer_Access := Strategy.Allocate_Buffer;
       File    : Babel.Files.File_Type;
       SHA1    : Util.Encoders.SHA1.Hash_Array;
    begin
       Strategy.Queue.Queue.Dequeue (File, 1.0);
-      Strategy.Read_File (File, Content);
-      Babel.Files.Signatures.Sha1 (Content.all, SHA1);
-      Babel.Files.Set_Signature (File, SHA1);
-      if Babel.Files.Is_Modified (File) then
-         Strategy.Backup_File (File, Content);
-      else
+      if File = Babel.Files.NO_FILE then
          Strategy.Release_Buffer (Content);
+      else
+         Strategy.Read_File (File, Content);
+         Babel.Files.Signatures.Sha1 (Content.all, SHA1);
+         Babel.Files.Set_Signature (File, SHA1);
+         if Babel.Files.Is_Modified (File) then
+            Strategy.Backup_File (File, Content);
+         else
+            Strategy.Release_Buffer (Content);
+         end if;
       end if;
 
    exception
