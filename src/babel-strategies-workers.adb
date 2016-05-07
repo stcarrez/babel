@@ -49,7 +49,7 @@ package body Babel.Strategies.Workers is
                exit;
 
             when E : others =>
-               Log.Error ("Strategy worker received exception", E);
+               Log.Error ("Strategy worker received exception", E, True);
          end;
       end loop;
    end Worker_Task;
