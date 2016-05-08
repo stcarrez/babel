@@ -26,6 +26,12 @@ package Babel.Stores.Local is
    function Get_Absolute_Path (Store : in Local_Store_Type;
                                Path  : in String) return String;
 
+   --  Open a file in the store to read its content with a stream.
+   overriding
+   procedure Open_File (Store  : in out Local_Store_Type;
+                        Path   : in String;
+                        Stream : out Babel.Streams.Stream_Access);
+
    overriding
    procedure Read (Store : in out Local_Store_Type;
                    Path  : in String;
