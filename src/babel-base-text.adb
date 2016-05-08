@@ -31,6 +31,19 @@ package body Babel.Base.Text is
       Into.Files.Insert (File);
    end Insert;
 
+   overriding
+   procedure Iterate (From    : in Text_Database;
+                      Process : not null access procedure (File : in Babel.Files.File_Type)) is
+
+      procedure Process_One (Pos : in Babel.Files.Sets.File_Cursor) is
+      begin
+         Process (Babel.Files.Sets.File_Sets.Element (Pos));
+      end Process_One;
+
+   begin
+      From.Files.Iterate (Process_One'Access);
+   end Iterate;
+
    --  ------------------------------
    --  Write the SHA1 checksum for the files stored in the map.
    --  ------------------------------
