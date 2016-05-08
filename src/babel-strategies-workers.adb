@@ -21,13 +21,28 @@ package body Babel.Strategies.Workers is
 
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("Babel.Strategies.Workers");
 
-   procedure Start (Worker   : in out Worker_Type;
-                    Strategy : in Babel.Strategies.Strategy_Type_Access) is
+   procedure Configure (Worker  : in out Worker_Type;
+                        Process : not null access procedure (S : in out Worker_Strategy)) is
    begin
       for I in Worker.Workers'Range loop
-         Worker.Workers (I).Start (Strategy);
+         Process (Worker.Strategies (I));
+      end loop;
+   end Configure;
+
+   procedure Start (Worker   : in out Worker_Type) is
+   begin
+      for I in Worker.Workers'Range loop
+         Worker.Workers (I).Start (Worker.Strategies (I)'Unchecked_Access);
       end loop;
    end Start;
+
+   procedure Finish (Worker   : in out Worker_Type;
+                     Database : in out Babel.Base.Database'Class) is
+   begin
+      for I in Worker.Workers'Range loop
+         Worker.Workers (I).Finish (Database);
+      end loop;
+   end Finish;
 
    task body Worker_Task is
       S : Babel.Strategies.Strategy_Type_Access;
@@ -52,6 +67,13 @@ package body Babel.Strategies.Workers is
                Log.Error ("Strategy worker received exception", E, True);
          end;
       end loop;
+      select
+         accept Finish (Database : in out Babel.Base.Database'Class) do
+            Database.Copy (S.Database);
+         end Finish;
+      or
+         terminate;
+      end select;
    end Worker_Task;
 
 end Babel.Strategies.Workers;
