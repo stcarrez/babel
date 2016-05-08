@@ -24,6 +24,7 @@ with Util.Streams;
 
 package Tar is
 
+   --  The <tt>File_Info_Type</tt> describes a file entry stored in the TAR file.
    type File_Info_Type is record
       Name     : Ada.Strings.Unbounded.Unbounded_String;
       Mode     : Util.Systems.Types.mode_t;
