@@ -27,7 +27,11 @@ package Babel.Base.Text is
    procedure Insert (Into : in out Text_Database;
                      File : in Babel.Files.File_Type);
 
---
+   overriding
+   procedure Iterate (From    : in Text_Database;
+                      Process : not null access procedure (File : in Babel.Files.File_Type));
+
+   --
 --     --  The `On_Create` procedure is called by `Notify_Create` to notify the creation of the item.
 --     procedure On_Create (Instance : in Text_Database;
 --                          Item     : in Babel.Files.File_Type);
