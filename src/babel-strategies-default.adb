@@ -18,8 +18,11 @@
 pragma Ada_2012;
 with Babel.Files.Signatures;
 with Util.Encoders.SHA1;
+with Util.Log.Loggers;
 
 package body Babel.Strategies.Default is
+
+   Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("Babel.Strategies.Default");
 
    --  Returns true if there is a directory that must be processed by the current strategy.
    overriding
@@ -38,6 +41,13 @@ package body Babel.Strategies.Default is
       null;
    end Peek_Directory;
 
+   --  Set the file queue that the strategy must use.
+   procedure Set_Queue (Strategy : in out Default_Strategy_Type;
+                        Queue    : in Babel.Files.Queues.File_Queue_Access) is
+   begin
+      Strategy.Queue := Queue;
+   end Set_Queue;
+
    overriding
    procedure Execute (Strategy : in out Default_Strategy_Type) is
       use type Babel.Files.File_Type;
@@ -46,10 +56,12 @@ package body Babel.Strategies.Default is
       File    : Babel.Files.File_Type;
       SHA1    : Util.Encoders.SHA1.Hash_Array;
    begin
-      Strategy.Queue.Queue.Dequeue (File, 1.0);
+      Strategy.Queue.Queue.Dequeue (File, 10.0);
       if File = Babel.Files.NO_FILE then
+         Log.Debug ("Dequeue NO_FILE");
          Strategy.Release_Buffer (Content);
       else
+         Log.Debug ("Dequeue {0}", Babel.Files.Get_Path (File));
          Strategy.Read_File (File, Content);
          Babel.Files.Signatures.Sha1 (Content.all, SHA1);
          Babel.Files.Set_Signature (File, SHA1);
@@ -74,6 +86,7 @@ package body Babel.Strategies.Default is
 
       procedure Add_Queue (File : in Babel.Files.File_Type) is
       begin
+         Log.Debug ("Queueing {0}", Babel.Files.Get_Path (File));
          Strategy.Queue.Add_File (File);
       end Add_Queue;
 
