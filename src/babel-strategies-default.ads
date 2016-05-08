@@ -39,7 +39,11 @@ package Babel.Strategies.Default is
                    Directory : in Babel.Files.Directory_Type;
                    Container : in out Babel.Files.File_Container'Class);
 
---     overriding
+   --  Set the file queue that the strategy must use.
+   procedure Set_Queue (Strategy : in out Default_Strategy_Type;
+                        Queue    : in Babel.Files.Queues.File_Queue_Access);
+
+   --     overriding
 --     procedure Add_File (Into    : in out Default_Strategy_Type;
 --                         Path    : in String;
 --                         Element : in Babel.Files.File);
@@ -52,7 +56,7 @@ package Babel.Strategies.Default is
 private
 
    type Default_Strategy_Type is new Babel.Strategies.Strategy_Type with record
-      Queue : Babel.Files.Queues.File_Queue;
+      Queue : Babel.Files.Queues.File_Queue_Access;
    end record;
 
 end Babel.Strategies.Default;
