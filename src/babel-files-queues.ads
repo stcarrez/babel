@@ -33,7 +33,7 @@ package Babel.Files.Queues is
    --  File size         => sha1, file status, backup
    package File_Fifo is new Util.Concurrent.Fifos (Element_Type     => File_Type,
                                                    Default_Size     => 100,
-                                                   Clear_On_Dequeue => True);
+                                                   Clear_On_Dequeue => False);
    --
    --     procedure Execute (Backup : in out Small_Files_Strategy;
    --                        Queue  : in out File_Queue) is
@@ -53,6 +53,7 @@ package Babel.Files.Queues is
    type File_Queue is tagged limited record
       Queue       : File_Fifo.Fifo;
    end record;
+   type File_Queue_Access is access all File_Queue'Class;
 
    procedure Add_File (Into : in out File_Queue;
                        File : in File_Type);
