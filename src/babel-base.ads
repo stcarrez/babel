@@ -28,6 +28,13 @@ package Babel.Base is
    procedure Insert (Into : in out Database;
                      File : in Babel.Files.File_Type) is abstract;
 
+   procedure Iterate (From    : in Database;
+                      Process : not null access
+                        procedure (File : in Babel.Files.File_Type)) is abstract;
+
+   procedure Copy (Into : in out Database'Class;
+                   From : in Database'Class);
+
 private
 
    type Database is abstract new Ada.Finalization.Limited_Controlled with record
