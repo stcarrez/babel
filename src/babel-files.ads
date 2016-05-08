@@ -30,8 +30,6 @@ package Babel.Files is
    subtype Directory_Identifier is ADO.Identifier;
    subtype File_Size is Long_Long_Integer;
    type File_Mode is mod 2**16;
-   type Uid_Type is mod 2**16;
-   type Gid_Type is mod 2**16;
 
    type File_Type is private;
    type File_Type_Array is array (Positive range <>) of File_Type;
