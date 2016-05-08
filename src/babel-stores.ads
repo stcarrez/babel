@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  babel-stores -- Storage management
---  Copyright (C) 2014 Stephane.Carrez
+--  Copyright (C) 2014, 2015 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,16 @@
 with Babel.Files;
 with Babel.Files.Buffers;
 with Babel.Filters;
+with Babel.Streams;
 package Babel.Stores is
 
    type Store_Type is limited interface;
    type Store_Type_Access is access all Store_Type'Class;
+
+   --  Open a file in the store to read its content with a stream.
+   procedure Open_File (Store  : in out Store_Type;
+                        Path   : in String;
+                        Stream : out Babel.Streams.Stream_Access) is abstract;
 
    procedure Read (Store : in out Store_Type;
                    Path  : in String;
