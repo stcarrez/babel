@@ -24,6 +24,7 @@ with Babel.Files.Buffers;
 with Babel.Stores;
 with Babel.Filters;
 with Babel.Base;
+with Babel.Base.Text;
 package Babel.Strategies is
 
    type Strategy_Type is abstract tagged limited private;
@@ -65,7 +66,7 @@ package Babel.Strategies is
                          Content  : in Babel.Files.Buffers.Buffer_Access);
 
    --  Backup the file from the local buffer into the write store.
-   procedure Backup_File (Strategy : in Strategy_Type;
+   procedure Backup_File (Strategy : in out Strategy_Type;
                           File     : in Babel.Files.File_Type;
                           Content  : in out Babel.Files.Buffers.Buffer_Access);
 
@@ -100,7 +101,8 @@ private
       Filters     : Babel.Filters.Filter_Type_Access;
       Buffers     : Babel.Files.Buffers.Buffer_Pool_Access;
       Listeners   : access Util.Listeners.List;
-      Database    : Babel.Base.Database_Access;
+      --        Database    : Babel.Base.Database_Access;
+      Database    : Babel.Base.Text.Text_Database;
    end record;
 
 end Babel.Strategies;
