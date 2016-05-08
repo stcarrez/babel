@@ -73,7 +73,7 @@ package body Babel.Strategies is
    end Write_File;
 
    --  Backup the file from the local buffer into the write store.
-   procedure Backup_File (Strategy : in Strategy_Type;
+   procedure Backup_File (Strategy : in out Strategy_Type;
                           File     : in Babel.Files.File_Type;
                           Content  : in out Babel.Files.Buffers.Buffer_Access) is
    begin
@@ -156,7 +156,8 @@ package body Babel.Strategies is
    procedure Set_Database (Strategy : in out Strategy_Type;
                            Database : in Babel.Base.Database_Access) is
    begin
-      Strategy.Database := Database;
+      --        Strategy.Database := Database;
+      null;
    end Set_Database;
 
 end Babel.Strategies;
