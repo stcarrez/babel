@@ -59,6 +59,15 @@ package body Babel.Stores.Local is
       end if;
    end Get_Absolute_Path;
 
+   --  Open a file in the store to read its content with a stream.
+   overriding
+   procedure Open_File (Store  : in out Local_Store_Type;
+                        Path   : in String;
+                        Stream : out Babel.Streams.Stream_Access) is
+   begin
+      null;
+   end Open_File;
+
    procedure Read (Store : in out Local_Store_Type;
                    Path  : in String;
                    Into  : in out Babel.Files.Buffers.Buffer) is
@@ -95,6 +104,7 @@ package body Babel.Stores.Local is
          end if;
       end if;
       if File < 0 then
+         Log.Error ("Cannot create {0}", Path);
          raise Ada.Streams.Stream_IO.Name_Error with "Cannot create " & Path;
       end if;
       Stream.Initialize (File);
@@ -167,6 +177,7 @@ package body Babel.Stores.Local is
                   Babel.Files.Set_Size (File, Babel.Files.File_Size (Stat.st_size));
                   Babel.Files.Set_Owner (File, Uid_Type (Stat.st_uid), Gid_Type (Stat.st_gid));
                   Babel.Files.Set_Date (File, Stat.st_mtim);
+                  Log.Debug ("Adding {0}", Name);
                   Into.Add_File (File);
                end if;
             elsif Name /= "." and Name /= ".." and Filter.Is_Accepted (Kind, Path, Name) then
