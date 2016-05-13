@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  babel-streams-tests - Unit tests for babel streams
---  Copyright (C) 2015 Stephane Carrez
+--  Copyright (C) 2015, 2016 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -68,6 +68,10 @@ package body Babel.Streams.Tests is
          end loop;
          Lz.Flush;
          Lz.Close;
+         lz.Finalize;
+         Cache.Finalize;
+         In_File.Finalize;
+         Out_File.Finalize;
       end;
 
       --  Decompress through file+cache+xz+file
@@ -93,6 +97,10 @@ package body Babel.Streams.Tests is
             Out_File.Write (Buffer);
          end loop;
          Out_File.Close;
+         lz.Finalize;
+         Cache.Finalize;
+         In_File.Finalize;
+         Out_File.Finalize;
       end;
       Util.Tests.Assert_Equal_Files (T, Src_Path, Tst_Path,
                                      "Composition stream failed for: " & Src);
@@ -105,9 +113,8 @@ package body Babel.Streams.Tests is
    procedure Test_Stream_Composition (T : in out Test) is
       Pool     : aliased Babel.Files.Buffers.Buffer_Pool;
    begin
-      Babel.Files.Buffers.Create_Pool (Into  => Pool,
-                                       Size  => 1_000,
-                                       Count => 1000);
+      Pool.Create_Pool (Size  => 1_000,
+                        Count => 1000);
       Do_Copy (T, Pool, "configure");
       Do_Copy (T, Pool, "babel.gpr");
       Do_Copy (T, Pool, "configure.in");
