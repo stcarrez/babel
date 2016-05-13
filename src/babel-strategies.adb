@@ -57,25 +57,25 @@ package body Babel.Strategies is
    --  Read the file from the read store into the local buffer.
    procedure Read_File (Strategy : in Strategy_Type;
                         File     : in Babel.Files.File_Type;
-                        Into     : in Babel.Files.Buffers.Buffer_Access) is
+                        Stream   : in out Babel.Streams.Refs.Stream_Ref) is
       Path : constant String := Babel.Files.Get_Path (File);
    begin
-      Strategy.Read_Store.Read (Path, Into.all);
+      Strategy.Read_Store.Read_File (Path, Stream);
    end Read_File;
 
    --  Write the file from the local buffer into the write store.
    procedure Write_File (Strategy : in Strategy_Type;
                          File     : in Babel.Files.File_Type;
-                         Content  : in Babel.Files.Buffers.Buffer_Access) is
+                         Stream   : in Babel.Streams.Refs.Stream_Ref) is
       Path : constant String := Babel.Files.Get_Path (File);
    begin
-      Strategy.Write_Store.Write (Path, Content.all);
+      Strategy.Write_Store.Write_File (Path, Stream, Babel.Files.Get_Mode (File));
    end Write_File;
 
    --  Backup the file from the local buffer into the write store.
    procedure Backup_File (Strategy : in out Strategy_Type;
                           File     : in Babel.Files.File_Type;
-                          Content  : in out Babel.Files.Buffers.Buffer_Access) is
+                          Stream   : in Babel.Streams.Refs.Stream_Ref) is
    begin
       Strategy.Database.Insert (File);
       if Strategy.Listeners /= null then
@@ -85,8 +85,7 @@ package body Babel.Strategies is
             Babel.Files.Lifecycles.Notify_Update (Strategy.Listeners.all, File);
          end if;
       end if;
-      Strategy.Write_File (File, Content);
-      Strategy.Release_Buffer (Content);
+      Strategy.Write_File (File, Stream);
    end Backup_File;
 
    --  Scan the directory
