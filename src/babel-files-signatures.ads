@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  babel-files-signatures -- Signatures calculation
---  Copyright (C) 2014 Stephane.Carrez
+--  Copyright (C) 2014, 2015, 2016 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,15 @@
 with Babel.Files;
 with Babel.Files.Buffers;
 with Babel.Files.Maps;
+with Babel.Streams.Refs;
 package Babel.Files.Signatures is
 
    --  Compute the SHA1 signature of the data stored in the buffer.
    procedure Sha1 (Buffer : in Babel.Files.Buffers.Buffer;
+                   Result : out Util.Encoders.SHA1.Hash_Array);
+
+   --  Compute the SHA1 signature of the file stream.
+   procedure Sha1 (Stream : in Babel.Streams.Refs.Stream_Ref;
                    Result : out Util.Encoders.SHA1.Hash_Array);
 
    --  Write the SHA1 checksum for the files stored in the map.
