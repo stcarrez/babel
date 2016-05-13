@@ -39,7 +39,7 @@ package Babel.Stores is
    procedure Write_File (Store  : in out Store_Type;
                          Path   : in String;
                          Stream : in Babel.Streams.Refs.Stream_Ref;
-                         Mode   : in Util.Systems.Types.mode_t) is abstract;
+                         Mode   : in Babel.Files.File_Mode) is abstract;
 
    procedure Read (Store : in out Store_Type;
                    Path  : in String;
