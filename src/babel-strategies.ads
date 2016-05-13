@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  babel-strategies -- Strategies to backup files
---  Copyright (C) 2014 Stephane.Carrez
+--  Copyright (C) 2014, 2015, 2016 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ with Util.Listeners;
 with Babel.Files;
 with Babel.Files.Queues;
 with Babel.Files.Buffers;
+with Babel.Streams.Refs;
 with Babel.Stores;
 with Babel.Filters;
 with Babel.Base;
