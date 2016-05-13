@@ -44,7 +44,7 @@ package Babel.Stores.Local is
    procedure Write_File (Store  : in out Local_Store_Type;
                          Path   : in String;
                          Stream : in Babel.Streams.Refs.Stream_Ref;
-                         Mode   : in Util.Systems.Types.mode_t);
+                         Mode   : in Babel.Files.File_Mode);
 
    overriding
    procedure Read (Store : in out Local_Store_Type;
