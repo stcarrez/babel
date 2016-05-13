@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  babel-testsuite - Babel Testsuite
---  Copyright (C) 2015 Stephane Carrez
+--  Copyright (C) 2015, 2016 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with Babel.Base.Users.Tests;
 with Babel.Streams.Tests;
+with Babel.Stores.Local.Tests;
 package body Babel.Testsuite is
 
    Tests : aliased Util.Tests.Test_Suite;
@@ -26,6 +27,7 @@ package body Babel.Testsuite is
    begin
       Babel.Base.Users.Tests.Add_Tests (Ret);
       Babel.Streams.Tests.Add_Tests (Ret);
+      Babel.Stores.Local.Tests.Add_Tests (Ret);
       return Ret;
    end Suite;
 
