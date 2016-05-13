@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  babel-Streams -- Stream management
---  Copyright (C) 2014, 2015 Stephane.Carrez
+--  Copyright (C) 2014, 2015, 2016 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,11 @@
 -----------------------------------------------------------------------
 
 with Ada.Finalization;
+with Util.Refs;
 with Babel.Files.Buffers;
 package Babel.Streams is
 
-   type Stream_Type is abstract tagged limited private;
+   type Stream_Type is abstract limited new Util.Refs.Ref_Entity with private;
    type Stream_Access is access all Stream_Type'Class;
 
    --  Read the data stream as much as possible and return the result in a buffer.
@@ -49,7 +50,7 @@ package Babel.Streams is
 
 private
 
-   type Stream_Type is abstract limited new Ada.Finalization.Limited_Controlled with record
+   type Stream_Type is abstract limited new Util.Refs.Ref_Entity with record
       Buffer  : Babel.Files.Buffers.Buffer_Access;
    end record;
 
