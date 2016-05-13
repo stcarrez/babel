@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  babel-streams-files -- Local file stream management
---  Copyright (C) 2014, 2015 Stephane.Carrez
+--  Copyright (C) 2014, 2015, 2016 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 with Interfaces.C.Strings;
 
 with Ada.Streams;
+with Ada.IO_Exceptions;
 
 with Util.Systems.Os;
 with Util.Systems.Constants;
@@ -48,6 +49,8 @@ package body Babel.Streams.Files is
    procedure Create (Stream : in out Stream_Type;
                      Path   : in String;
                      Mode   : in Util.Systems.Types.mode_t) is
+      use type Util.Systems.Os.File_Type;
+
       Name : Interfaces.C.Strings.chars_ptr := Interfaces.C.Strings.New_String (Path);
       Fd   : Util.Systems.Os.File_Type;
    begin
@@ -59,6 +62,9 @@ package body Babel.Streams.Files is
       Interfaces.C.Strings.Free (Name);
       Stream.Buffer := null;
       Stream.File.Initialize (File => Fd);
+      if Fd < 0 then
+         raise Ada.IO_Exceptions.Name_Error with "Cannot create '" & Path & "'";
+      end if;
     end Create;
 
    --  ------------------------------
@@ -110,7 +116,8 @@ package body Babel.Streams.Files is
    overriding
    procedure Rewind (Stream : in out Stream_Type) is
    begin
-      null;
+      Stream.File.Seek (0, Util.Systems.Types.SEEK_SET);
+      Stream.Eof := False;
    end Rewind;
 
 end Babel.Streams.Files;
