@@ -94,14 +94,14 @@ package body Babel.Stores.Local is
    procedure Write_File (Store  : in out Local_Store_Type;
                          Path   : in String;
                          Stream : in Babel.Streams.Refs.Stream_Ref;
-                         Mode   : in Util.Systems.Types.mode_t) is
+                         Mode   : in Babel.Files.File_Mode) is
       File   : Babel.Streams.Files.Stream_Access := new Babel.Streams.Files.Stream_Type;
       Output : Babel.Streams.Refs.Stream_Ref;
    begin
       Log.Info ("Write file {0}", Path);
 
       Output := Babel.Streams.Refs.Stream_Refs.Create (File.all'Access);
-      File.Create (Path, Mode);
+      File.Create (Path, Interfaces.C.unsigned (Mode));
       Babel.Streams.Refs.Copy (From => Stream,
                                Into => Output);
    end Write_File;
