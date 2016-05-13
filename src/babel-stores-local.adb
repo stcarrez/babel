@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  bkp-stores-local -- Store management for local files
---  Copyright (C) 2014 Stephane.Carrez
+--  Copyright (C) 2014, 2015, 2016 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,8 @@ with Util.Streams.Raw;
 with Util.Systems.Types;
 with Util.Systems.Os;
 with Interfaces;
+
+with Babel.Streams.Files;
 package body Babel.Stores.Local is
 
    function Errno return Integer;
@@ -67,6 +69,42 @@ package body Babel.Stores.Local is
    begin
       null;
    end Open_File;
+
+   --  ------------------------------
+   --  Open a file in the store to read its content with a stream.
+   --  ------------------------------
+   overriding
+   procedure Read_File (Store  : in out Local_Store_Type;
+                        Path   : in String;
+                        Stream : out Babel.Streams.Refs.Stream_Ref) is
+      File   : Babel.Streams.Files.Stream_Access := new Babel.Streams.Files.Stream_Type;
+      Buffer : Babel.Files.Buffers.Buffer_Access;
+   begin
+      Log.Info ("Read file {0}", Path);
+
+      Stream := Babel.Streams.Refs.Stream_Refs.Create (File.all'Access);
+      Store.Pool.Get_Buffer (Buffer);
+      File.Open (Path, Buffer);
+   end Read_File;
+
+   --  ------------------------------
+   --  Write a file in the store with a stream.
+   --  ------------------------------
+   overriding
+   procedure Write_File (Store  : in out Local_Store_Type;
+                         Path   : in String;
+                         Stream : in Babel.Streams.Refs.Stream_Ref;
+                         Mode   : in Util.Systems.Types.mode_t) is
+      File   : Babel.Streams.Files.Stream_Access := new Babel.Streams.Files.Stream_Type;
+      Output : Babel.Streams.Refs.Stream_Ref;
+   begin
+      Log.Info ("Write file {0}", Path);
+
+      Output := Babel.Streams.Refs.Stream_Refs.Create (File.all'Access);
+      File.Create (Path, Mode);
+      Babel.Streams.Refs.Copy (From => Stream,
+                               Into => Output);
+   end Write_File;
 
    procedure Read (Store : in out Local_Store_Type;
                    Path  : in String;
@@ -203,5 +241,14 @@ package body Babel.Stores.Local is
    begin
       Store.Root_Dir := Ada.Strings.Unbounded.To_Unbounded_String (Path);
    end Set_Root_Directory;
+
+   --  ------------------------------
+   --  Set the buffer pool to be used by local store.
+   --  ------------------------------
+   procedure Set_Buffers (Store   : in out Local_Store_Type;
+                          Buffers : in Babel.Files.Buffers.Buffer_Pool_Access) is
+   begin
+      Store.Pool := Buffers;
+   end Set_Buffers;
 
 end Babel.Stores.Local;
