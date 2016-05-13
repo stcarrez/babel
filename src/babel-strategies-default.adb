@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  babel-strategies -- Strategies to backup files
---  Copyright (C) 2014 Stephane.Carrez
+--  Copyright (C) 2014, 2015, 2016 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@ with Babel.Files.Signatures;
 with Util.Encoders.SHA1;
 with Util.Log.Loggers;
 
+with Babel.Streams.Refs;
 package body Babel.Strategies.Default is
 
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("Babel.Strategies.Default");
@@ -55,6 +56,7 @@ package body Babel.Strategies.Default is
       Content : Babel.Files.Buffers.Buffer_Access := Strategy.Allocate_Buffer;
       File    : Babel.Files.File_Type;
       SHA1    : Util.Encoders.SHA1.Hash_Array;
+      Stream  : Babel.Streams.Refs.Stream_Ref;
    begin
       Strategy.Queue.Queue.Dequeue (File, 10.0);
       if File = Babel.Files.NO_FILE then
@@ -62,11 +64,11 @@ package body Babel.Strategies.Default is
          Strategy.Release_Buffer (Content);
       else
          Log.Debug ("Dequeue {0}", Babel.Files.Get_Path (File));
-         Strategy.Read_File (File, Content);
-         Babel.Files.Signatures.Sha1 (Content.all, SHA1);
+         Strategy.Read_File (File, Stream);
+         Babel.Files.Signatures.Sha1 (Stream, SHA1);
          Babel.Files.Set_Signature (File, SHA1);
          if Babel.Files.Is_Modified (File) then
-            Strategy.Backup_File (File, Content);
+            Strategy.Backup_File (File, Stream);
          else
             Strategy.Release_Buffer (Content);
          end if;
