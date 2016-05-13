@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  babel-files-signatures -- Signatures calculation
---  Copyright (C) 2014 Stephane.Carrez
+--  Copyright (C) 2014 , 2015, 2016 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,26 @@ package body Babel.Files.Signatures is
       Ctx  : Util.Encoders.SHA1.Context;
    begin
       Util.Encoders.SHA1.Update (Ctx, Buffer.Data (Buffer.Data'First .. Buffer.Last));
+      Util.Encoders.SHA1.Finish (Ctx, Result);
+   end Sha1;
+
+   --  ------------------------------
+   --  Compute the SHA1 signature of the file stream.
+   --  ------------------------------
+   procedure Sha1 (Stream : in Babel.Streams.Refs.Stream_Ref;
+                   Result : out Util.Encoders.SHA1.Hash_Array) is
+      use type Babel.Files.Buffers.Buffer_Access;
+
+      From_Stream : constant Babel.Streams.Stream_Access := Stream.Value;
+      Buffer      : Babel.Files.Buffers.Buffer_Access;
+      Ctx         : Util.Encoders.SHA1.Context;
+   begin
+      From_Stream.Rewind;
+      loop
+         From_Stream.Read (Buffer);
+         exit when Buffer = null;
+         Util.Encoders.SHA1.Update (Ctx, Buffer.Data (Buffer.Data'First .. Buffer.Last));
+      end loop;
       Util.Encoders.SHA1.Finish (Ctx, Result);
    end Sha1;
 
