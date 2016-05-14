@@ -32,9 +32,6 @@ with Interfaces;
 with Babel.Streams.Files;
 package body Babel.Stores.Local is
 
-   function Errno return Integer;
-   pragma Import (C, errno, "__get_errno");
-
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("Babel.Stores.Local");
 
    function Get_File_Size (Ent : in Ada.Directories.Directory_Entry_Type) return Babel.Files.File_Size is
