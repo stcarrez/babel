@@ -53,15 +53,13 @@ package body Babel.Strategies.Default is
    procedure Execute (Strategy : in out Default_Strategy_Type) is
       use type Babel.Files.File_Type;
 
-      Content : Babel.Files.Buffers.Buffer_Access := Strategy.Allocate_Buffer;
       File    : Babel.Files.File_Type;
       SHA1    : Util.Encoders.SHA1.Hash_Array;
       Stream  : Babel.Streams.Refs.Stream_Ref;
    begin
-      Strategy.Queue.Queue.Dequeue (File, 10.0);
+      Strategy.Queue.Queue.Dequeue (File, 0.1);
       if File = Babel.Files.NO_FILE then
          Log.Debug ("Dequeue NO_FILE");
-         Strategy.Release_Buffer (Content);
       else
          Log.Debug ("Dequeue {0}", Babel.Files.Get_Path (File));
          Strategy.Read_File (File, Stream);
@@ -69,15 +67,9 @@ package body Babel.Strategies.Default is
          Babel.Files.Set_Signature (File, SHA1);
          if Babel.Files.Is_Modified (File) then
             Strategy.Backup_File (File, Stream);
-         else
-            Strategy.Release_Buffer (Content);
          end if;
       end if;
 
-   exception
-      when others =>
-         Strategy.Release_Buffer (Content);
-         raise;
    end Execute;
 
    --  Scan the directory
