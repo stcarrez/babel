@@ -16,8 +16,9 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Interfaces.C.Strings;
-
+with System.OS_Constants;
 with Ada.Streams;
+with Ada.Directories;
 with Ada.IO_Exceptions;
 
 with Util.Systems.Os;
@@ -25,6 +26,9 @@ with Util.Systems.Constants;
 package body Babel.Streams.Files is
 
    use type Interfaces.C.int;
+
+   function Errno return Integer;
+   pragma Import (C, errno, "__get_errno");
 
    --  ------------------------------
    --  Open the local file for reading and use the given buffer for the Read operation.
@@ -50,19 +54,31 @@ package body Babel.Streams.Files is
                      Path   : in String;
                      Mode   : in Util.Systems.Types.mode_t) is
       use type Util.Systems.Os.File_Type;
+      use Util.Systems.Os;
+      use type Interfaces.C.int;
 
       Name : Interfaces.C.Strings.chars_ptr := Interfaces.C.Strings.New_String (Path);
-      Fd   : Util.Systems.Os.File_Type;
+      File : Util.Systems.Os.File_Type;
    begin
-      Fd := Util.Systems.Os.Sys_Open (Path  => Name,
-                                      Flags => Util.Systems.Constants.O_WRONLY
-                                      + Util.Systems.Constants.O_CREAT
-                                      + Util.Systems.Constants.O_TRUNC,
-                                      Mode  => Interfaces.C.int (Mode));
+      File := Util.Systems.Os.Sys_Open (Path  => Name,
+                                        Flags => Util.Systems.Constants.O_WRONLY
+                                        + Util.Systems.Constants.O_CREAT
+                                        + Util.Systems.Constants.O_TRUNC,
+                                        Mode  => Mode);
+      if File < 0 then
+         if Errno = System.OS_Constants.ENOENT then
+            declare
+               Dir : constant String := Ada.Directories.Containing_Directory (Path);
+            begin
+               Ada.Directories.Create_Path (Dir);
+            end;
+            File := Util.Systems.Os.Sys_Open (Name, O_CREAT + O_WRONLY, Mode);
+         end if;
+      end if;
       Interfaces.C.Strings.Free (Name);
       Stream.Buffer := null;
-      Stream.File.Initialize (File => Fd);
-      if Fd < 0 then
+      Stream.File.Initialize (File => File);
+      if File < 0 then
          raise Ada.IO_Exceptions.Name_Error with "Cannot create '" & Path & "'";
       end if;
     end Create;
