@@ -97,6 +97,8 @@ procedure babel_main is
       Babel.Files.Buffers.Create_Pool (Into => Buffers, Count => 10, Size => 20_000_000);
       Store.Set_Root_Directory (Dst);
       Local.Set_Root_Directory ("");
+      Store.Set_Buffers (Buffers'Unchecked_Access);
+      Local.Set_Buffers (Buffers'Unchecked_Access);
 
       Do_Backup (Task_Count);
       Database.Save ("database.txt");
