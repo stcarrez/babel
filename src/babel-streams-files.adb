@@ -27,9 +27,6 @@ package body Babel.Streams.Files is
 
    use type Interfaces.C.int;
 
-   function Errno return Integer;
-   pragma Import (C, errno, "__get_errno");
-
    --  ------------------------------
    --  Open the local file for reading and use the given buffer for the Read operation.
    --  ------------------------------
