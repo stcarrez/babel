@@ -77,14 +77,15 @@ package body Babel.Stores.Local is
    procedure Read_File (Store  : in out Local_Store_Type;
                         Path   : in String;
                         Stream : out Babel.Streams.Refs.Stream_Ref) is
-      File   : Babel.Streams.Files.Stream_Access := new Babel.Streams.Files.Stream_Type;
-      Buffer : Babel.Files.Buffers.Buffer_Access;
+      Abs_Path : constant String := Store.Get_Absolute_Path (Path);
+      File     : Babel.Streams.Files.Stream_Access := new Babel.Streams.Files.Stream_Type;
+      Buffer   : Babel.Files.Buffers.Buffer_Access;
    begin
-      Log.Info ("Read file {0}", Path);
+      Log.Info ("Read file {0}", Abs_Path);
 
       Stream := Babel.Streams.Refs.Stream_Refs.Create (File.all'Access);
       Store.Pool.Get_Buffer (Buffer);
-      File.Open (Path, Buffer);
+      File.Open (Abs_Path, Buffer);
    end Read_File;
 
    --  ------------------------------
@@ -95,13 +96,14 @@ package body Babel.Stores.Local is
                          Path   : in String;
                          Stream : in Babel.Streams.Refs.Stream_Ref;
                          Mode   : in Babel.Files.File_Mode) is
-      File   : Babel.Streams.Files.Stream_Access := new Babel.Streams.Files.Stream_Type;
-      Output : Babel.Streams.Refs.Stream_Ref;
+      Abs_Path   : constant String := Store.Get_Absolute_Path (Path);
+      File       : Babel.Streams.Files.Stream_Access := new Babel.Streams.Files.Stream_Type;
+      Output     : Babel.Streams.Refs.Stream_Ref;
    begin
-      Log.Info ("Write file {0}", Path);
+      Log.Info ("Write file {0}", Abs_Path);
 
       Output := Babel.Streams.Refs.Stream_Refs.Create (File.all'Access);
-      File.Create (Path, Interfaces.C.unsigned (Mode));
+      File.Create (Abs_Path, Mode);
       Babel.Streams.Refs.Copy (From => Stream,
                                Into => Output);
    end Write_File;
