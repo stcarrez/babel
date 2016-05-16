@@ -18,7 +18,9 @@
 with Ada.Calendar;
 with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
+with Ada.Containers.Hashed_Maps;
 
+with Util.Strings;
 with Util.Systems.Types;
 with Util.Encoders.SHA1;
 with ADO;
@@ -229,8 +231,24 @@ package Babel.Files is
 
 private
 
+   type Directory;
    type String_Access is access all String;
    type File_Type is access all File;
+   type Directory_Type is access all Directory;
+
+   package File_Maps is new
+     Ada.Containers.Hashed_Maps (Key_Type        => Util.Strings.Name_Access,
+                                 Element_Type    => File_Type,
+                                 Hash            => Util.Strings.Hash,
+                                 Equivalent_Keys => Util.Strings.Equivalent_Keys,
+                                 "="             => "=");
+
+   package Directory_Maps is new
+     Ada.Containers.Hashed_Maps (Key_Type        => Util.Strings.Name_Access,
+                                 Element_Type    => Directory_Type,
+                                 Hash            => Util.Strings.Hash,
+                                 Equivalent_Keys => Util.Strings.Equivalent_Keys,
+                                 "="             => "=");
 
    type Directory is record
       Id       : Directory_Identifier := NO_IDENTIFIER;
@@ -238,15 +256,12 @@ private
       Mode     : File_Mode := 8#755#;
       User     : Uid_Type  := 0;
       Group    : Gid_Type  := 0;
-      Files    : File_Type_Array_Access;
-      Children : Directory_Type_Array_Access;
-      Path     : Ada.Strings.Unbounded.Unbounded_String;
-      --        Name     : aliased String (1 .. Len);
+      Files    : File_Maps.Map;
+      Children : Directory_Maps.Map;
+      --  Children : Directory_Type_Array_Access;
       Name_Pos : Natural := 0;
       Name     : String_Access;
    end record;
-
-   type Directory_Type is access all Directory;
 
    package File_Vectors is new
      Ada.Containers.Vectors (Index_Type   => Positive,
