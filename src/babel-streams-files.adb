@@ -20,6 +20,7 @@ with System.OS_Constants;
 with Ada.Streams;
 with Ada.Directories;
 with Ada.IO_Exceptions;
+with Interfaces.C;
 
 with Util.Systems.Os;
 with Util.Systems.Constants;
@@ -27,14 +28,23 @@ package body Babel.Streams.Files is
 
    use type Interfaces.C.int;
 
+   function Sys_Fadvise (Fd     : in Util.Systems.Os.File_Type;
+                         Offset : in Util.Systems.Types.off_t;
+                         Length : in Util.Systems.Types.off_t;
+                         Advice : in Interfaces.C.int) return Interfaces.C.int;
+   pragma Import (C, Sys_Fadvise, "posix_fadvise");
+
    --  ------------------------------
    --  Open the local file for reading and use the given buffer for the Read operation.
    --  ------------------------------
    procedure Open (Stream : in out Stream_Type;
                    Path   : in String;
                    Buffer : in Babel.Files.Buffers.Buffer_Access) is
+      use type Util.Systems.Os.File_Type;
+
       Name : Interfaces.C.Strings.chars_ptr := Interfaces.C.Strings.New_String (Path);
       Fd   : Util.Systems.Os.File_Type;
+      Res  : Interfaces.C.int;
    begin
       Fd := Util.Systems.Os.Sys_Open (Path  => Name,
                                       Flags => Util.Systems.Constants.O_RDONLY,
@@ -42,6 +52,9 @@ package body Babel.Streams.Files is
       Interfaces.C.Strings.Free (Name);
       Stream.Buffer := Buffer;
       Stream.File.Initialize (File => Fd);
+      if Fd >= 0 then
+         Res := Sys_Fadvise (Fd, 0, 0, 2);
+      end if;
    end Open;
 
    --  ------------------------------
