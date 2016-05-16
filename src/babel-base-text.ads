@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  babel-base -- Database for files
---  Copyright (C) 2014 Stephane.Carrez
+--  Copyright (C) 2014, 2015, 2016 Stephane.Carrez
 --  Written by Stephane.Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,21 +31,12 @@ package Babel.Base.Text is
    procedure Iterate (From    : in Text_Database;
                       Process : not null access procedure (File : in Babel.Files.File_Type));
 
-   --
---     --  The `On_Create` procedure is called by `Notify_Create` to notify the creation of the item.
---     procedure On_Create (Instance : in Text_Database;
---                          Item     : in Babel.Files.File_Type);
---
---     --  The `On_Update` procedure is called by `Notify_Update` to notify the update of the item.
---     procedure On_Update (Instance : in Text_Database;
---                          Item     : in Babel.Files.File_Type);
---
---     --  The `On_Delete` procedure is called by `Notify_Delete` to notify the deletion of the item.
---     procedure On_Delete (Instance : in Text_Database;
---                          Item     : in Babel.Files.File_Type);
---  Write the SHA1 checksum for the files stored in the map.
---  ------------------------------
+   --  Save the database file description in the file.
    procedure Save (Database : in Text_Database;
+                   Path     : in String);
+
+   --  Load the database file description from the file.
+   procedure Load (Database : in out Text_Database;
                    Path     : in String);
 
 private
