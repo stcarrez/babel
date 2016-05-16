@@ -18,6 +18,7 @@
 with Babel.Base.Users.Tests;
 with Babel.Streams.Tests;
 with Babel.Stores.Local.Tests;
+with Babel.Base.Text.Tests;
 package body Babel.Testsuite is
 
    Tests : aliased Util.Tests.Test_Suite;
@@ -26,6 +27,7 @@ package body Babel.Testsuite is
       Ret : constant Util.Tests.Access_Test_Suite := Tests'Access;
    begin
       Babel.Base.Users.Tests.Add_Tests (Ret);
+      Babel.Base.Text.Tests.Add_Tests (Ret);
       Babel.Streams.Tests.Add_Tests (Ret);
       Babel.Stores.Local.Tests.Add_Tests (Ret);
       return Ret;
