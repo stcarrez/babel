@@ -76,6 +76,7 @@ package body Babel.Strategies is
    procedure Backup_File (Strategy : in out Strategy_Type;
                           File     : in Babel.Files.File_Type;
                           Stream   : in Babel.Streams.Refs.Stream_Ref) is
+      use type Babel.Stores.Store_Type_Access;
    begin
       Strategy.Database.Insert (File);
       if Strategy.Listeners /= null then
@@ -85,7 +86,9 @@ package body Babel.Strategies is
             Babel.Files.Lifecycles.Notify_Update (Strategy.Listeners.all, File);
          end if;
       end if;
-      Strategy.Write_File (File, Stream);
+      if Strategy.Write_Store /= null then
+         Strategy.Write_File (File, Stream);
+      end if;
    end Backup_File;
 
    --  Scan the directory
