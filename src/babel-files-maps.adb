@@ -73,6 +73,39 @@ package body Babel.Files.Maps is
       end if;
    end Find;
 
+   procedure Add_File (Dirs  : in out Directory_Map;
+                       Files : in out File_Map;
+                       Path  : in String;
+                       File  : out File_Type) is
+      Pos      : constant Natural := Util.Strings.Rindex (Path, '/');
+      File_Pos : File_Cursor;
+      Dir      : Directory_Type := NO_DIRECTORY;
+   begin
+      if Pos = 0 then
+         File := Find (Files, Path);
+         Dir := Find (Dirs, ".");
+      else
+         File := Find (Files, Path (Pos + 1 .. Path'Last));
+         Dir := Find (Dirs, Path (Path'First .. Pos - 1));
+      end if;
+      if Dir = NO_DIRECTORY then
+         if Pos = 0 then
+            Dir := Allocate (".", NO_DIRECTORY);
+         else
+            Dir := Allocate (Path (Path'First .. Pos - 1), NO_DIRECTORY);
+         end if;
+         Dirs.Insert (Dir.Name.all'Access, Dir);
+      end if;
+      if File = NO_FILE then
+         if Pos = 0 then
+            File := Allocate (Path, Dir);
+         else
+            File := Allocate (Path (Pos + 1 .. Path'Last), Dir);
+         end if;
+         Files.Insert (File.Name'Unrestricted_Access, File);
+      end if;
+   end Add_File;
+
    --  ------------------------------
    --  Add the file with the given name in the container.
    --  ------------------------------
@@ -95,7 +128,7 @@ package body Babel.Files.Maps is
       use type ADO.Identifier;
    begin
       if Element.Id = ADO.NO_IDENTIFIER then
-         Into.Known_Dirs.Insert (Element.Name'Unrestricted_Access, Element);
+         Into.Known_Dirs.Insert (Element.Name.all'Access, Element);
       end if;
    end Add_Directory;
 
