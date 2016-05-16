@@ -30,7 +30,7 @@ package Babel.Files.Maps is
      Ada.Containers.Hashed_Maps (Key_Type        => Util.Strings.Name_Access,
                                  Element_Type    => File_Type,
                                  Hash            => Util.Strings.Hash,
-                                 Equivalent_Keys => Util.Strings."=",
+                                 Equivalent_Keys => Util.Strings.Equivalent_Keys,
                                  "="             => "=");
 
    subtype File_Map is File_Maps.Map;
@@ -53,7 +53,7 @@ package Babel.Files.Maps is
      Ada.Containers.Hashed_Maps (Key_Type        => Util.Strings.Name_Access,
                                  Element_Type    => Directory_Type,
                                  Hash            => Util.Strings.Hash,
-                                 Equivalent_Keys => Util.Strings."=",
+                                 Equivalent_Keys => Util.Strings.Equivalent_Keys,
                                  "="             => "=");
 
    subtype Directory_Map is Directory_Maps.Map;
@@ -66,6 +66,11 @@ package Babel.Files.Maps is
    --  Find the directory with the given name in the directory map.
    function Find (From : in Directory_Map;
                   Name : in String) return Directory_Type;
+
+   procedure Add_File (Dirs  : in out Directory_Map;
+                       Files : in out File_Map;
+                       Path  : in String;
+                       File  : out File_Type);
 
    type Differential_Container is new Babel.Files.Default_Container with private;
 
