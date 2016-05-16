@@ -70,10 +70,11 @@ package body Babel.Files is
                       Dir  : in Directory_Type) return Directory_Type is
       use Ada.Strings.Unbounded;
 
-      Result : constant Directory_Type := new Directory '(Len    => Name'Length,
+      Dir_Name : constant String_Access := new String '(Name);
+      Result : constant Directory_Type := new Directory '(--  Len    => Name'Length,
                                                           Id     => NO_IDENTIFIER,
                                                           Parent => Dir,
-                                                          Name   => Name,
+                                                          Name   => Dir_Name,
                                                           others => <>);
    begin
       if Dir /= null then
@@ -164,7 +165,17 @@ package body Babel.Files is
    procedure Set_Date (Element : in File_Type;
                        Date    : in Util.Systems.Types.Timespec) is
    begin
-      Element.Date := Ada.Calendar.Conversions.To_Ada_Time (Interfaces.C.long (Date.tv_sec));
+      Set_Date (Element, Ada.Calendar.Conversions.To_Ada_Time (Interfaces.C.long (Date.tv_sec)));
+   end Set_Date;
+
+   procedure Set_Date (Element : in File_Type;
+                       Date    : in Ada.Calendar.Time) is
+      use type Ada.Calendar.Time;
+   begin
+      if Element.Date /= Date then
+         Element.Date   := Date;
+         Element.Status := Element.Status or FILE_MODIFIED;
+      end if;
    end Set_Date;
 
    --  ------------------------------
