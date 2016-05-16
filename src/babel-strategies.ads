@@ -97,13 +97,12 @@ package Babel.Strategies is
 private
 
    type Strategy_Type is abstract tagged limited record
-      Read_Store  : Babel.Stores.Store_Type_Access;
-      Write_Store : Babel.Stores.Store_Type_Access;
-      Filters     : Babel.Filters.Filter_Type_Access;
-      Buffers     : Babel.Files.Buffers.Buffer_Pool_Access;
-      Listeners   : access Util.Listeners.List;
-      --        Database    : Babel.Base.Database_Access;
-      Database    : Babel.Base.Text.Text_Database;
+      Read_Store    : Babel.Stores.Store_Type_Access;
+      Write_Store   : Babel.Stores.Store_Type_Access;
+      Filters       : Babel.Filters.Filter_Type_Access;
+      Buffers       : Babel.Files.Buffers.Buffer_Pool_Access;
+      Listeners     : access Util.Listeners.List;
+      Database      : Babel.Base.Text.Text_Database;
    end record;
 
 end Babel.Strategies;
