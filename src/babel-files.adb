@@ -44,7 +44,7 @@ package body Babel.Files is
       elsif Right.Dir = NO_DIRECTORY then
          return False;
       else
-         return Left.Dir.Path < Right.Dir.Path;
+         return Left.Dir.Name.all < Right.Dir.Name.all;
       end if;
    end "<";
 
@@ -68,21 +68,19 @@ package body Babel.Files is
    --  ------------------------------
    function Allocate (Name : in String;
                       Dir  : in Directory_Type) return Directory_Type is
-      use Ada.Strings.Unbounded;
-
-      Dir_Name : constant String_Access := new String '(Name);
-      Result : constant Directory_Type := new Directory '(--  Len    => Name'Length,
-                                                          Id     => NO_IDENTIFIER,
-                                                          Parent => Dir,
-                                                          Name   => Dir_Name,
-                                                          others => <>);
+      Path     : String_Access;
+      Result   : constant Directory_Type := new Directory '(Id       => NO_IDENTIFIER,
+                                                            Parent   => Dir,
+                                                            others   => <>);
    begin
       if Dir /= null then
-         Result.Path := To_Unbounded_String
-           (Util.Files.Compose (To_String (Dir.Path), Name));
+         Path := new String '(Util.Files.Compose (Dir.Name.all, Name));
+         Result.Name_Pos := Dir.Name'Length + 1;
       else
-         Result.Path := To_Unbounded_String (Name);
+         Path := new String '(Name);
+         Result.Name_Pos := 1;
       end if;
+      Result.Name := Path;
       return Result;
    end Allocate;
 
@@ -195,7 +193,7 @@ package body Babel.Files is
    --  ------------------------------
    function Get_Path (Element : in Directory_Type) return String is
    begin
-      return Ada.Strings.Unbounded.To_String (Element.Path);
+      return Element.Name.all;
    end Get_Path;
 
    --  ------------------------------
