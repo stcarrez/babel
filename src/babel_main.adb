@@ -61,14 +61,6 @@ procedure babel_main is
       Ada.Command_Line.Set_Exit_Status (2);
    end Usage;
 
-   procedure Configure (Strategy : in out Babel.Strategies.Default.Default_Strategy_Type) is
-   begin
-      Strategy.Set_Filters (Exclude'Unchecked_Access);
-      Strategy.Set_Stores (Read => Local'Unchecked_Access, Write => Store'Unchecked_Access);
-      Strategy.Set_Buffers (Buffers'Unchecked_Access);
-      Strategy.Set_Database (Database'Unchecked_Access);
-      Strategy.Set_Queue (Queue'Unchecked_Access);
-   end Configure;
 
    package Backup_Workers is
       new Babel.Strategies.Workers (Babel.Strategies.Default.Default_Strategy_Type);
@@ -76,13 +68,22 @@ procedure babel_main is
    procedure Do_Backup (Count : in Positive) is
       Workers   : Backup_Workers.Worker_Type (Count);
       Container : Babel.Files.Default_Container;
-      Queue     : Babel.Files.Queues.Directory_Queue;
+      Dir_Queue : Babel.Files.Queues.Directory_Queue;
+
+      procedure Configure (Strategy : in out Babel.Strategies.Default.Default_Strategy_Type) is
+      begin
+         Strategy.Set_Filters (Exclude'Unchecked_Access);
+         Strategy.Set_Stores (Read => Local'Unchecked_Access, Write => Store'Unchecked_Access);
+         Strategy.Set_Buffers (Buffers'Unchecked_Access);
+         Strategy.Set_Queue (Queue'Unchecked_Access);
+      end Configure;
+
    begin
-      Babel.Files.Queues.Add_Directory (Queue, Dir);
+      Babel.Files.Queues.Add_Directory (Dir_Queue, Dir);
       Configure (Backup);
       Backup_Workers.Configure (Workers, Configure'Access);
       Backup_Workers.Start (Workers);
-      Backup.Scan (Queue, Container);
+      Backup.Scan (Dir_Queue, Container);
       Backup_Workers.Finish (Workers, Database);
    end Do_Backup;
 
@@ -92,30 +93,40 @@ procedure babel_main is
    begin
       Dir := Babel.Files.Allocate (Name => Src,
                                    Dir  => Babel.Files.NO_DIRECTORY);
-      --  Exclude.Add_Exclude (".svn");
-      --  Exclude.Add_Exclude ("obj");
-      Babel.Files.Buffers.Create_Pool (Into => Buffers, Count => 10, Size => 20_000_000);
+
       Store.Set_Root_Directory (Dst);
       Local.Set_Root_Directory ("");
-      Store.Set_Buffers (Buffers'Unchecked_Access);
-      Local.Set_Buffers (Buffers'Unchecked_Access);
 
       Do_Backup (Task_Count);
       Database.Save ("database.txt");
    end Do_Copy;
 
    procedure Do_Scan is
-      Src : constant String := GNAT.Command_Line.Get_Argument;
+      Src       : constant String := GNAT.Command_Line.Get_Argument;
+      Workers   : Backup_Workers.Worker_Type (Task_Count);
+      Container : Babel.Files.Default_Container;
+      Dir_Queue : Babel.Files.Queues.Directory_Queue;
+
+      procedure Configure (Strategy : in out Babel.Strategies.Default.Default_Strategy_Type) is
+      begin
+         Strategy.Set_Filters (Exclude'Unchecked_Access);
+         Strategy.Set_Stores (Read => Local'Unchecked_Access, Write => null);
+         Strategy.Set_Buffers (Buffers'Unchecked_Access);
+         Strategy.Set_Queue (Queue'Unchecked_Access);
+      end Configure;
+
    begin
       Dir := Babel.Files.Allocate (Name => Src,
                                    Dir  => Babel.Files.NO_DIRECTORY);
-      Exclude.Add_Exclude (".svn");
-      Exclude.Add_Exclude ("obj");
-      Babel.Files.Buffers.Create_Pool (Into => Buffers, Count => 10, Size => 1_000_000);
-      Local.Set_Root_Directory (Src);
 
-      Do_Backup (Task_Count);
-      Database.Save ("database.txt");
+      Local.Set_Root_Directory ("");
+      Babel.Files.Queues.Add_Directory (Dir_Queue, Dir);
+      Configure (Backup);
+      Backup_Workers.Configure (Workers, Configure'Access);
+      Backup_Workers.Start (Workers);
+      Backup.Scan (Dir_Queue, Container);
+      Backup_Workers.Finish (Workers, Database);
+      Database.Save ("database-scan.txt");
    end Do_Scan;
 
 begin
@@ -148,6 +159,9 @@ begin
       Usage;
       return;
    end if;
+   Babel.Files.Buffers.Create_Pool (Into => Buffers, Count => 100, Size => 64 * 1024);
+   Store.Set_Buffers (Buffers'Unchecked_Access);
+   Local.Set_Buffers (Buffers'Unchecked_Access);
    declare
       Cmd_Name  : constant String := Full_Switch;
    begin
