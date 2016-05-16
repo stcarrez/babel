@@ -15,11 +15,23 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Ada.Streams;
+with Ada.Calendar;
+with Ada.Exceptions;
+
 with Util.Dates.ISO8601;
+with Util.Files;
+with Util.Strings;
+with Util.Encoders.Base16;
+with Util.Encoders.SHA1;
+with Util.Log.Loggers;
 with Babel.Files.Sets;
+with Babel.Files.Maps;
 with Babel.Files.Lifecycles;
 with Ada.Text_IO;
 package body Babel.Base.Text is
+
+   Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("Babel.Base.Text");
 
    --  ------------------------------
    --  Insert the file in the database.
@@ -45,7 +57,7 @@ package body Babel.Base.Text is
    end Iterate;
 
    --  ------------------------------
-   --  Write the SHA1 checksum for the files stored in the map.
+   --  Save the database file description in the file.
    --  ------------------------------
    procedure Save (Database : in Text_Database;
                    Path     : in String) is
@@ -68,9 +80,91 @@ package body Babel.Base.Text is
       end Write_Checksum;
 
    begin
+      Log.Info ("Save text database {0}", Path);
+
       Ada.Text_IO.Create (File => Checksum, Name => Path);
       Database.Files.Iterate (Write_Checksum'Access);
       Ada.Text_IO.Close (File => Checksum);
    end Save;
+
+   --  ------------------------------
+   --  Load the database file description from the file.
+   --  ------------------------------
+   procedure Load (Database : in out Text_Database;
+                   Path     : in String) is
+      Checksum    : Ada.Text_IO.File_Type;
+      Dirs        : Babel.Files.Maps.Directory_Map;
+      Files       : Babel.Files.Maps.File_Map;
+      Hex_Decoder : Util.Encoders.Base16.Decoder;
+      Line_Number : Natural := 0;
+
+      procedure Read_Line (Line : in String) is
+         File      : Babel.Files.File_Type;
+         Pos       : Natural;
+         First     : Natural;
+         Sign      : Util.Encoders.SHA1.Hash_Array;
+         Sign_Size : Ada.Streams.Stream_Element_Offset;
+         User      : Uid_Type;
+         Group     : Gid_Type;
+         Date      : Ada.Calendar.Time;
+         Size      : Babel.Files.File_Size;
+      begin
+         Line_Number := Line_Number + 1;
+         Pos := Util.Strings.Index (Line, ' ');
+         if Pos = 0 then
+            return;
+         end if;
+         Hex_Decoder.Transform (Line (Line'First .. Pos - 1), Sign, Sign_Size);
+
+         --  Extract the user ID.
+         First := Pos + 1;
+         Pos := Util.Strings.Index (Line, ' ', First);
+         if Pos = 0 then
+            return;
+         end if;
+         User := Uid_Type'Value (Line (First .. Pos - 1));
+
+         --  Extract the group ID.
+         First := Pos + 1;
+         Pos := Util.Strings.Index (Line, ' ', First);
+         if Pos = 0 then
+            return;
+         end if;
+         Group := Uid_Type'Value (Line (First .. Pos - 1));
+
+         --  Extract the file date.
+         First := Pos + 1;
+         Pos := Util.Strings.Index (Line, ' ', First);
+         if Pos = 0 then
+            return;
+         end if;
+         Date := Util.Dates.ISO8601.Value (Line (First .. Pos - 1));
+
+         --  Extract the file size.
+         First := Pos + 1;
+         Pos := Util.Strings.Index (Line, ' ', First);
+         if Pos = 0 then
+            return;
+         end if;
+         Size := Babel.Files.File_Size'Value (Line (First .. Pos - 1));
+
+         Babel.Files.Maps.Add_File (Dirs, Files, Line (Pos + 1 .. Line'Last), File);
+         Babel.Files.Set_Owner (File, User, Group);
+         Babel.Files.Set_Size (File, Size);
+         Babel.Files.Set_Signature (File, Sign);
+         Babel.Files.Set_Date (File, Date);
+         Database.Insert (File);
+
+      exception
+         when E : others =>
+            Log.Error ("{0}:{1}: Error: {2}: {3}: " & Line, Path, Natural'Image (Line_Number),
+                       Ada.Exceptions.Exception_Message (E));
+      end Read_Line;
+
+   begin
+      Log.Info ("Load text database {0}", Path);
+
+      Util.Files.Read_File (Path, Read_Line'Access);
+   end Load;
 
 end Babel.Base.Text;
