@@ -107,6 +107,8 @@ package Babel.Files is
    --  Set the file modification date.
    procedure Set_Date (Element : in File_Type;
                        Date    : in Util.Systems.Types.Timespec);
+   procedure Set_Date (Element : in File_Type;
+                       Date    : in Ada.Calendar.Time);
 
    --  Return the path for the file.
    function Get_Path (Element : in File_Type) return String;
@@ -227,9 +229,10 @@ package Babel.Files is
 
 private
 
+   type String_Access is access all String;
    type File_Type is access all File;
 
-   type Directory (Len : Positive) is record
+   type Directory is record
       Id       : Directory_Identifier := NO_IDENTIFIER;
       Parent   : Directory_Type;
       Mode     : File_Mode := 8#755#;
@@ -238,7 +241,9 @@ private
       Files    : File_Type_Array_Access;
       Children : Directory_Type_Array_Access;
       Path     : Ada.Strings.Unbounded.Unbounded_String;
-      Name     : aliased String (1 .. Len);
+      --        Name     : aliased String (1 .. Len);
+      Name_Pos : Natural := 0;
+      Name     : String_Access;
    end record;
 
    type Directory_Type is access all Directory;
